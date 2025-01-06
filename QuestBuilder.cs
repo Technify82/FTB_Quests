@@ -68,7 +68,6 @@ namespace FTB_Quests
 
             if (File.Exists(selectedFilePath))
             {
-                // Use StreamReader for asynchronous reading
                 string[] lines;
                 using (StreamReader reader = new StreamReader(selectedFilePath))
                 {

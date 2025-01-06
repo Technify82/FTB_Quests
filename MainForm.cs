@@ -12,8 +12,6 @@ namespace FTB_Quests
         private DataDisplay dataDisplay;
         private PopulateRecipeGrid populateRecipeGrid;
         private BuildQuests buildQuests;
-        //private QuestGridControl questGridControl;
-        //private QuestGridBuilder questGridBuilder;
         private QuestGridForm questGridForm;
         OreDictLogic oreDictLogic;
         public MainForm()
@@ -41,7 +39,6 @@ namespace FTB_Quests
                     populateRecipeGrid = new PopulateRecipeGrid(this);
                     dataDisplay.DataDisplay_Load();
                     buildQuests = new BuildQuests();
-                   // questGridControl = new QuestGridControl();
                     questGridForm = new QuestGridForm();
                     componentsInitialized = true;
 

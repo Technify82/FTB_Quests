@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-//using FTB_Quests_Caching;
-
 
 namespace FTB_Quests
 {
@@ -147,13 +145,10 @@ namespace FTB_Quests
 
         private void DisplayQuestsInGrid(DirectoryInfo directoryInfo)
         {
-            // Preload data for all quests
             questTreeViewManager.PreloadData(connectionString);
 
-            // Filter broken items
             var nonBrokenItems = FilterBrokenItems();
 
-            // Clear the existing controls in the grid
             questGridControl.Controls.Clear();
             questGridControl.RowStyles.Clear();
             questGridControl.RowCount = 0;
@@ -161,7 +156,6 @@ namespace FTB_Quests
             int columnCount = questGridControl.ColumnCount;
             int totalItems = 0;
 
-            // Add non-broken quest items to the grid, skipping every other cell
             foreach (var questItem in nonBrokenItems)
             {
                 var pictureBox = new PictureBox
@@ -170,13 +164,11 @@ namespace FTB_Quests
                     SizeMode = PictureBoxSizeMode.StretchImage,
                     Width = 32,
                     Height = 32,
-                    Tag = questItem.FileName // Store the file name for reference
+                    Tag = questItem.FileName       
                 };
 
-                // Enable drag-and-drop
                 EnableDragAndDrop(pictureBox);
 
-                // Set ToolTip text to the first display name
                 if (questTreeViewManager.DisplayNameCache.ContainsKey(questItem.FileName))
                 {
                     var displayNames = questTreeViewManager.DisplayNameCache[questItem.FileName];
@@ -198,11 +190,9 @@ namespace FTB_Quests
                 questGridControl.Controls.Add(pictureBox, column, row);
                 totalItems++;
 
-                // Debugging information
                 Console.WriteLine($"Added non-broken item: {questItem.FileName} at row {row}, column {column}");
             }
 
-            // Fill remaining spaces with "Woops" image
             var woopsImage = questTreeViewManager.GetEmbeddedImage("Woops.png");
             while (totalItems < columnCount * questGridControl.RowCount / 2)
             {
@@ -217,23 +207,19 @@ namespace FTB_Quests
                     Height = 32
                 };
 
-                // Enable drag-and-drop
                 EnableDragAndDrop(pictureBox);
 
                 questGridControl.Controls.Add(pictureBox, column, row);
                 totalItems++;
 
-                // Debugging information
                 Console.WriteLine($"Added 'Woops' image at row {row}, column {column}");
             }
         }
 
         private void HideBrokenItemsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // Define the directoryInfo object
             DirectoryInfo directoryInfo = new DirectoryInfo(ConfigManager.Config.QuestFolder);
 
-            // Clear the existing controls in the grid
             questGridControl.Controls.Clear();
             questGridControl.RowStyles.Clear();
             questGridControl.RowCount = 0;
@@ -241,7 +227,6 @@ namespace FTB_Quests
             int columnCount = questGridControl.ColumnCount;
             int totalItems = 0;
 
-            // Add quest items to the grid, skipping every other cell
             foreach (var file in directoryInfo.GetFiles("*.snbt"))
             {
                 var displayNames = questTreeViewManager.GetQuestDisplayNames(file.Name, connectionString);
@@ -253,13 +238,11 @@ namespace FTB_Quests
                     SizeMode = PictureBoxSizeMode.StretchImage,
                     Width = 32,
                     Height = 32,
-                    Tag = file.Name // Store the file name for reference
+                    Tag = file.Name       
                 };
 
-                // Enable drag-and-drop
                 EnableDragAndDrop(pictureBox);
 
-                // Set ToolTip text to the first display name
                 if (displayNames.Count > 0)
                 {
                     toolTip.SetToolTip(pictureBox, displayNames[0]);
@@ -277,11 +260,9 @@ namespace FTB_Quests
                 questGridControl.Controls.Add(pictureBox, column, row);
                 totalItems++;
 
-                // Debugging information
                 Console.WriteLine($"Added item: {file.Name} at row {row}, column {column}");
             }
 
-            // Fill remaining spaces with "Woops" image
             var woopsImage = questTreeViewManager.GetEmbeddedImage("Woops.png");
             while (totalItems < columnCount * questGridControl.RowCount / 2)
             {
@@ -296,13 +277,11 @@ namespace FTB_Quests
                     Height = 32
                 };
 
-                // Enable drag-and-drop
                 EnableDragAndDrop(pictureBox);
 
                 questGridControl.Controls.Add(pictureBox, column, row);
                 totalItems++;
 
-                // Debugging information
                 Console.WriteLine($"Added 'Woops' image at row {row}, column {column}");
             }
         }
@@ -355,16 +334,6 @@ namespace FTB_Quests
                 questGridControl.Controls.SetChildIndex(targetPictureBox, sourceIndex);
             }
         }
-
-        //private void CacheQuestData(string questId, string questData)
-        //{
-        //    FileCacheManager.AddToCache(questId, questData);
-        //}
-
-        //private string RetrieveCachedQuestData(string questId)
-        //{
-        //    return FileCacheManager.GetFromCache(questId);
-        //}
 
 
     }

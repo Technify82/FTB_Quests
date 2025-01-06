@@ -281,8 +281,6 @@ namespace FTB_Quests
                     string oreIngredient = match.Key;
                     string displayName = match.Value;
 
-                    //Console.WriteLine($"[INFO] Swapping {oreIngredient} with {displayName}");
-
                     for (char col = 'A'; col <= 'I'; col++)
                     {
                         var updateQuery = $"UPDATE Recipes SET {col} = @displayName WHERE {col} = @oreIngredient";

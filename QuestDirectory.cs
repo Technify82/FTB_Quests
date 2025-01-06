@@ -43,7 +43,7 @@ namespace FTB_Quests
                     using (var transaction = connection.BeginTransaction())
                     {
                         form.toolStripProgressBar2.Value = 0;
-                        form.toolStripProgressBar2.Maximum = itemIdToQuestMap.Count + uidToQuestMap.Count; // Adjust progress bar maximum
+                        form.toolStripProgressBar2.Maximum = itemIdToQuestMap.Count + uidToQuestMap.Count;     
 
                         var dbUpdateStartTime = DateTime.Now;
                         BatchUpdateDatabase(itemIdToQuestMap, uidToQuestMap, connection, transaction);
@@ -150,14 +150,12 @@ namespace FTB_Quests
             var directoryScanEndTime = DateTime.Now;
             Console.WriteLine($"Directory scan execution time: {(directoryScanEndTime - directoryScanStartTime).TotalMilliseconds} ms");
 
-            // Return both dictionaries as a tuple
             return Tuple.Create(itemIdToQuestMap, uidToQuestMap);
         }
 
 
         private void ProcessFileContent(string fileContent, string filename, Dictionary<string, List<string>> itemIdToQuestMap, Dictionary<string, List<string>> uidToQuestMap)
         {
-            //Console.WriteLine($"Processing file content for file: {filename}");
             string[] lines = fileContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             bool insideTasks = false;
@@ -170,24 +168,20 @@ namespace FTB_Quests
 
                     if (itemId != null)
                     {
-                        //Console.WriteLine($"Found itemId: {itemId} in file: {filename}");
                         if (!itemIdToQuestMap.ContainsKey(itemId))
                         {
                             itemIdToQuestMap[itemId] = new List<string>();
                         }
                         itemIdToQuestMap[itemId].Add(filename);
-                        // Console.WriteLine($"Added questName: {filename} for itemId: {itemId}");
                     }
                 }
 
-                // Check for the start of the tasks block
                 if (line.Contains("tasks:"))
                 {
                     insideTasks = true;
-                    continue; // Move to the next line to get the uid
+                    continue;          
                 }
 
-                // If inside the tasks block, look for the uid
                 if (insideTasks)
                 {
                     var uidRegex = new Regex(@"uid:\s*""([^""]+)""");
@@ -196,18 +190,15 @@ namespace FTB_Quests
                     if (uidMatch.Success)
                     {
                         string uid = uidMatch.Groups[1].Value;
-                        // Console.WriteLine($"Found task uid: {uid} in file: {filename}");
                         if (!uidToQuestMap.ContainsKey(uid))
                         {
                             uidToQuestMap[uid] = new List<string>();
                         }
                         uidToQuestMap[uid].Add(filename);
-                        // Console.WriteLine($"Mapped task uid: {uid} to quest file: {filename}");
-                        insideTasks = false; // Exit the tasks block after finding the uid
+                        insideTasks = false;         
                     }
                 }
 
-                // Reset insideTasks flag if we encounter the end of tasks block
                 if (line.Contains("}]"))
                 {
                     insideTasks = false;
@@ -219,13 +210,12 @@ namespace FTB_Quests
         private void BatchUpdateDatabase(Dictionary<string, List<string>> itemIdToQuestMap, Dictionary<string, List<string>> uidToQuestMap, SQLiteConnection connection, SQLiteTransaction transaction)
         {
             var batchUpdateStartTime = DateTime.Now;
-            const int batchSize = 50; // Adjust the batch size as needed
+            const int batchSize = 50;       
             var commandText = new StringBuilder();
             var parameters = new List<SQLiteParameter>();
 
             int currentBatchSize = 0;
 
-            // Process itemIdToQuestMap
             foreach (var entry in itemIdToQuestMap)
             {
                 string itemId = entry.Key;
@@ -236,8 +226,6 @@ namespace FTB_Quests
                     commandText.AppendLine($"UPDATE Recipes SET Quests = @Quests{currentBatchSize} WHERE ItemName = @ItemName{currentBatchSize};");
                     parameters.Add(new SQLiteParameter($"@Quests{currentBatchSize}", questName));
                     parameters.Add(new SQLiteParameter($"@ItemName{currentBatchSize}", itemId));
-                    // Console.WriteLine($"Preparing to update database for itemId: {itemId} with questName: {questName}");
-
                     currentBatchSize++;
 
                     if (currentBatchSize >= batchSize)
@@ -250,7 +238,6 @@ namespace FTB_Quests
                 }
             }
 
-            // Process uidToQuestMap
             foreach (var entry in uidToQuestMap)
             {
                 string uid = entry.Key;
@@ -261,8 +248,6 @@ namespace FTB_Quests
                     commandText.AppendLine($"UPDATE Recipes SET TaskUID = @TaskUID{currentBatchSize} WHERE Quests = @Quests{currentBatchSize};");
                     parameters.Add(new SQLiteParameter($"@TaskUID{currentBatchSize}", uid));
                     parameters.Add(new SQLiteParameter($"@Quests{currentBatchSize}", questName));
-                    //   Console.WriteLine($"Preparing to update database for task uid: {uid} with questName: {questName}");
-
                     currentBatchSize++;
 
                     if (currentBatchSize >= batchSize)
@@ -275,7 +260,6 @@ namespace FTB_Quests
                 }
             }
 
-            // Execute any remaining updates
             if (currentBatchSize > 0)
             {
                 ExecuteBatchUpdate(connection, transaction, commandText, parameters);

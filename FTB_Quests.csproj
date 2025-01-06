@@ -53,20 +53,28 @@
     <Compile Include="BuildQuests.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BuildQuests.Designer.cs" />
+    <Compile Include="BuildQuests.Designer.cs">
+      <DependentUpon>BuildQuests.cs</DependentUpon>
+    </Compile>
     <Compile Include="Configuration.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Configuration.Designer.cs" />
+    <Compile Include="Configuration.Designer.cs">
+      <DependentUpon>Configuration.cs</DependentUpon>
+    </Compile>
     <Compile Include="DatabaseIO.cs" />
     <Compile Include="DataDisplay.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DataDisplay.Designer.cs" />
+    <Compile Include="DataDisplay.Designer.cs">
+      <DependentUpon>DataDisplay.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs" />
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="NewParser.cs" />
     <Compile Include="OreDictLogic.cs" />
     <Compile Include="PopulateRecipeGrid.cs" />
@@ -78,10 +86,18 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="QuestTreeViewManager.cs" />
-    <EmbeddedResource Include="BuildQuests.resx" />
-    <EmbeddedResource Include="Configuration.resx" />
-    <EmbeddedResource Include="DataDisplay.resx" />
-    <EmbeddedResource Include="MainForm.resx" />
+    <EmbeddedResource Include="BuildQuests.resx">
+      <DependentUpon>BuildQuests.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Configuration.resx">
+      <DependentUpon>Configuration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataDisplay.resx">
+      <DependentUpon>DataDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -91,7 +107,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="QuestGridForm.resx" />
+    <EmbeddedResource Include="QuestGridForm.resx">
+      <DependentUpon>QuestGridForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

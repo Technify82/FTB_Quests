@@ -95,7 +95,7 @@ namespace FTB_Quests
                 };
                 parentNode.Nodes.Add(directoryNode);
 
-                GetFiles(directory, directoryNode); // Recursively add files in subdirectories
+                GetFiles(directory, directoryNode);      
             }
 
             foreach (var file in directoryInfo.GetFiles("*.snbt"))
@@ -174,7 +174,6 @@ namespace FTB_Quests
                 }
             }
 
-            // Return the embedded "Woops.png" image if not found
             return GetEmbeddedImage("Woops.png");
         }
 
@@ -223,7 +222,6 @@ namespace FTB_Quests
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = $"FTB_Quests.{imageName}";
 
-            // Log available resources
             var resourceNames = assembly.GetManifestResourceNames();
             Console.WriteLine("Available resources:");
             foreach (var name in resourceNames)
@@ -231,7 +229,6 @@ namespace FTB_Quests
                 Console.WriteLine(name);
             }
 
-            // Check if the resource exists
             if (Array.Exists(resourceNames, element => element.Equals(resourceName)))
             {
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName))

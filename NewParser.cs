@@ -306,7 +306,7 @@ namespace FTB_Quests
 
         private void InsertRecipes(SQLiteConnection connection, SQLiteTransaction transaction, List<RecipeData> parsedRecipes)
         {
-            const int maxBatchSize = 80; // Adjust this value as needed to ensure we stay within the parameter limit
+            const int maxBatchSize = 80;              
             int totalRecipes = parsedRecipes.Count;
 
             for (int batchStart = 0; batchStart < totalRecipes; batchStart += maxBatchSize)
@@ -320,7 +320,7 @@ namespace FTB_Quests
                     bulkInsertQuery.Append($"(@InputPattern{i}, @A{i}, @B{i}, @C{i}, @D{i}, @E{i}, @F{i}, @G{i}, @H{i}, @I{i}, @OutputItem{i}, @Quantity{i}),");
                 }
 
-                bulkInsertQuery.Length--; // Remove the last comma
+                bulkInsertQuery.Length--;     
                 bulkInsertQuery.Append(";");
 
                 using (SQLiteCommand command = new SQLiteCommand(bulkInsertQuery.ToString(), connection, transaction))
