@@ -42,7 +42,7 @@
             this.RecipeDataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.RecipeDataGridView1.Location = new System.Drawing.Point(-38, 73);
             this.RecipeDataGridView1.Name = "RecipeDataGridView1";
-            this.RecipeDataGridView1.Size = new System.Drawing.Size(1301, 579);
+            this.RecipeDataGridView1.Size = new System.Drawing.Size(1510, 433);
             this.RecipeDataGridView1.TabIndex = 1;
             // 
             // textBox1
@@ -57,7 +57,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1325, 707);
+            this.ClientSize = new System.Drawing.Size(1534, 561);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.RecipeDataGridView1);
             this.Name = "DataDisplay";

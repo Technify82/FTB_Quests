@@ -38,34 +38,29 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.SaveAndRemoveAllDependencies = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.SuspendLayout();
             // 
             // treeView1
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.Location = new System.Drawing.Point(13, 121);
+            this.treeView1.Location = new System.Drawing.Point(12, 52);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(446, 985);
+            this.treeView1.Size = new System.Drawing.Size(192, 520);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelectedIndexClick);
             // 
             // QuestBox
             // 
-            this.QuestBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.QuestBox.Location = new System.Drawing.Point(501, 121);
+            this.QuestBox.Location = new System.Drawing.Point(210, 52);
             this.QuestBox.Name = "QuestBox";
-            this.QuestBox.Size = new System.Drawing.Size(448, 298);
+            this.QuestBox.Size = new System.Drawing.Size(453, 298);
             this.QuestBox.TabIndex = 1;
             this.QuestBox.Text = "";
             // 
             // checkBox1
             // 
-            this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(973, 123);
+            this.checkBox1.Location = new System.Drawing.Point(345, 394);
             this.checkBox1.MaximumSize = new System.Drawing.Size(133, 17);
             this.checkBox1.MinimumSize = new System.Drawing.Size(133, 17);
             this.checkBox1.Name = "checkBox1";
@@ -76,13 +71,11 @@
             // 
             // SaveQuest
             // 
-            this.SaveQuest.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.SaveQuest.Location = new System.Drawing.Point(501, 1059);
-            this.SaveQuest.MaximumSize = new System.Drawing.Size(150, 50);
-            this.SaveQuest.MinimumSize = new System.Drawing.Size(150, 50);
+            this.SaveQuest.Location = new System.Drawing.Point(484, 394);
+            this.SaveQuest.MaximumSize = new System.Drawing.Size(200, 50);
+            this.SaveQuest.MinimumSize = new System.Drawing.Size(200, 50);
             this.SaveQuest.Name = "SaveQuest";
-            this.SaveQuest.Size = new System.Drawing.Size(150, 50);
+            this.SaveQuest.Size = new System.Drawing.Size(200, 50);
             this.SaveQuest.TabIndex = 4;
             this.SaveQuest.Text = "Save Quest";
             this.SaveQuest.UseVisualStyleBackColor = true;
@@ -90,9 +83,7 @@
             // 
             // SaveAllQuests
             // 
-            this.SaveAllQuests.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.SaveAllQuests.Location = new System.Drawing.Point(676, 1059);
+            this.SaveAllQuests.Location = new System.Drawing.Point(484, 450);
             this.SaveAllQuests.MaximumSize = new System.Drawing.Size(200, 50);
             this.SaveAllQuests.MinimumSize = new System.Drawing.Size(200, 50);
             this.SaveAllQuests.Name = "SaveAllQuests";
@@ -104,7 +95,7 @@
             // 
             // DependencyBox
             // 
-            this.DependencyBox.Location = new System.Drawing.Point(501, 461);
+            this.DependencyBox.Location = new System.Drawing.Point(210, 392);
             this.DependencyBox.Name = "DependencyBox";
             this.DependencyBox.Size = new System.Drawing.Size(129, 177);
             this.DependencyBox.TabIndex = 6;
@@ -113,7 +104,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(498, 105);
+            this.label1.Location = new System.Drawing.Point(207, 36);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 13);
             this.label1.TabIndex = 7;
@@ -122,7 +113,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 105);
+            this.label2.Location = new System.Drawing.Point(11, 36);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(70, 13);
             this.label2.TabIndex = 8;
@@ -131,7 +122,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(498, 445);
+            this.label3.Location = new System.Drawing.Point(207, 376);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(91, 13);
             this.label3.TabIndex = 9;
@@ -139,19 +130,29 @@
             // 
             // SaveAndRemoveAllDependencies
             // 
-            this.SaveAndRemoveAllDependencies.Location = new System.Drawing.Point(892, 1059);
+            this.SaveAndRemoveAllDependencies.Location = new System.Drawing.Point(484, 506);
+            this.SaveAndRemoveAllDependencies.MaximumSize = new System.Drawing.Size(200, 50);
+            this.SaveAndRemoveAllDependencies.MinimumSize = new System.Drawing.Size(200, 50);
             this.SaveAndRemoveAllDependencies.Name = "SaveAndRemoveAllDependencies";
-            this.SaveAndRemoveAllDependencies.Size = new System.Drawing.Size(184, 50);
+            this.SaveAndRemoveAllDependencies.Size = new System.Drawing.Size(200, 50);
             this.SaveAndRemoveAllDependencies.TabIndex = 10;
             this.SaveAndRemoveAllDependencies.Text = "Remove Dependencies from All Quests";
             this.SaveAndRemoveAllDependencies.UseVisualStyleBackColor = true;
             this.SaveAndRemoveAllDependencies.Click += new System.EventHandler(this.SaveAndRemoveAllDependencies_Click);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(731, 24);
+            this.menuStrip1.TabIndex = 11;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
             // BuildQuests
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1118, 1163);
+            this.ClientSize = new System.Drawing.Size(731, 602);
             this.Controls.Add(this.SaveAndRemoveAllDependencies);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -162,6 +163,8 @@
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.QuestBox);
             this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "BuildQuests";
             this.Text = "BuildQuests";
             this.ResumeLayout(false);
@@ -180,5 +183,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         public System.Windows.Forms.Button SaveAndRemoveAllDependencies;
+        private System.Windows.Forms.MenuStrip menuStrip1;
     }
 }

@@ -39,6 +39,9 @@ namespace FTB_Quests
             this.questTreeView = new System.Windows.Forms.TreeView();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // menuStrip1
+            // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stuffToolStripMenuItem,
             this.optionsToolStripMenuItem});
@@ -47,28 +50,31 @@ namespace FTB_Quests
             this.menuStrip1.Size = new System.Drawing.Size(1811, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // stuffToolStripMenuItem
+            // 
             this.stuffToolStripMenuItem.Name = "stuffToolStripMenuItem";
             this.stuffToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.stuffToolStripMenuItem.Text = "Stuff";
+            // 
+            // optionsToolStripMenuItem
+            // 
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.hideBrokenItemsToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
+            // 
+            // hideBrokenItemsToolStripMenuItem
+            // 
             this.hideBrokenItemsToolStripMenuItem.Name = "hideBrokenItemsToolStripMenuItem";
             this.hideBrokenItemsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
             this.hideBrokenItemsToolStripMenuItem.Text = "Hide Broken Items";
             this.hideBrokenItemsToolStripMenuItem.Click += new System.EventHandler(this.HideBrokenItemsToolStripMenuItem_Click);
-            this.questGridControl.Location = new System.Drawing.Point(0, 0);
-            this.questGridControl.Name = "questGridControl";
-            this.questGridControl.Size = new System.Drawing.Size(200, 100);
-            this.questGridControl.TabIndex = 0;
-            this.questTreeView.Dock = System.Windows.Forms.DockStyle.Left;
-            this.questTreeView.Location = new System.Drawing.Point(0, 24);
-            this.questTreeView.Name = "questTreeView";
-            this.questTreeView.Size = new System.Drawing.Size(250, 1066);
-            this.questTreeView.TabIndex = 1;
-            this.questTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.QuestTreeView_AfterSelect);
+            // 
+            // questGridControl
+            // 
+            this.questGridControl.AutoScroll = true;
             this.questGridControl.ColumnCount = 20;
             this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
             this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
@@ -97,6 +103,18 @@ namespace FTB_Quests
             this.questGridControl.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.questGridControl.Size = new System.Drawing.Size(1555, 1066);
             this.questGridControl.TabIndex = 2;
+            // 
+            // questTreeView
+            // 
+            this.questTreeView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.questTreeView.Location = new System.Drawing.Point(0, 24);
+            this.questTreeView.Name = "questTreeView";
+            this.questTreeView.Size = new System.Drawing.Size(250, 1066);
+            this.questTreeView.TabIndex = 1;
+            this.questTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.QuestTreeView_AfterSelect);
+            // 
+            // QuestGridForm
+            // 
             this.ClientSize = new System.Drawing.Size(1811, 1090);
             this.Controls.Add(this.questGridControl);
             this.Controls.Add(this.questTreeView);

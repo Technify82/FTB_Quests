@@ -16,7 +16,31 @@ namespace FTB_Quests
             LoadConfiguration();
             PopulateTextBoxes();
 
+            // Subscribe to the Form.Load event
+            Load += Configuration_Load;
         }
+
+        private void Configuration_Load(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(config.ProjectFolder) || !Directory.Exists(config.ProjectFolder))
+            {
+                MessageBox.Show("Please set a valid project folder before proceeding.", "Project Folder Missing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                // Simulate a click on the Project Folder button
+                projectFolder.PerformClick();
+            }
+            else
+            {
+                string fullPath = config.ProjectFolder;
+                string projectFolder = Path.GetFileName(fullPath);
+
+                CachingSystem.InitializeCaching(projectFolder, CacheInfoBox);
+                CachingSystem.ScanProjectFilesForChanges(projectFolder, CacheInfoBox);
+
+                // Start the cache timer with an interval of 5 minutes (300,000 milliseconds)
+                CachingSystem.StartCacheTimer(projectFolder, CacheInfoBox, 300000);
+            }
+        }
+
         public void LoadConfiguration()
         {
             string configFilePath = "Configuration.json";
@@ -38,6 +62,55 @@ namespace FTB_Quests
                 config = new Config();
             }
         }
+
+        // Add an event handler for the ProjectFolder button to re-enable controls once the project folder is set
+        public void ProjectFolder_Click(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            {
+                folderBrowserDialog.Description = "Select a project folder";
+                folderBrowserDialog.ShowNewFolderButton = true;
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    projectFolderTextBox.Text = folderBrowserDialog.SelectedPath;
+                    config.ProjectFolder = folderBrowserDialog.SelectedPath; // Update the project folder in the config
+                    SaveConfig();
+
+                    string fullPath = config.ProjectFolder;
+                    string projectFolder = Path.GetFileName(fullPath);
+
+                    // Reinitialize caching with the new project folder
+                    CachingSystem.InitializeCaching(projectFolder, CacheInfoBox);
+                    CachingSystem.ScanProjectFilesForChanges(projectFolder, CacheInfoBox);
+                    CachingSystem.StartCacheTimer(projectFolder, CacheInfoBox, 300000);
+
+                    EnableControls(); // Re-enable controls
+                }
+            }
+        }
+
+        private void DisableControls()
+        {
+            // Disable all controls except the ones needed to set the project folder
+            foreach (Control ctrl in Controls)
+            {
+                if (ctrl.Name != "projectFolderTextBox" && ctrl.Name != "ProjectFolderButton")
+                {
+                    ctrl.Enabled = false;
+                }
+            }
+        }
+
+        private void EnableControls()
+        {
+            // Re-enable all controls
+            foreach (Control ctrl in Controls)
+            {
+                ctrl.Enabled = true;
+            }
+        }
+
+
         public void SaveConfig()
         {
             config.ProjectFolder = projectFolderTextBox.Text;
@@ -50,6 +123,7 @@ namespace FTB_Quests
             string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText("Configuration.json", json);
         }
+
         public void PopulateTextBoxes()
         {
             projectFolderTextBox.Text = config.ProjectFolder;
@@ -59,21 +133,6 @@ namespace FTB_Quests
             QuestFolderLocation.Text = config.QuestFolder;
             OreDictFileLocation.Text = config.OreDictionary;
             DatabaseFile.Text = config.DatabaseFile;
-        }
-
-        public void ProjectFolder_Click(object sender, EventArgs e)
-        {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
-            {
-                folderBrowserDialog.Description = "Select a project folder";
-                folderBrowserDialog.ShowNewFolderButton = true;
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    projectFolderTextBox.Text = folderBrowserDialog.SelectedPath;
-                    UpdateTextBoxes(folderBrowserDialog.SelectedPath);
-                }
-                SaveConfig();
-            }
         }
 
         public void RecipeFile_Click(object sender, EventArgs e)
@@ -90,6 +149,7 @@ namespace FTB_Quests
                 SaveConfig();
             }
         }
+
         public void ItemPanelFile_Click(object sender, EventArgs e)
         {
             using (var openFileDialog = new OpenFileDialog())
@@ -104,6 +164,7 @@ namespace FTB_Quests
                 SaveConfig();
             }
         }
+
         public void ItemImagesFolder_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
@@ -117,6 +178,7 @@ namespace FTB_Quests
                 SaveConfig();
             }
         }
+
         public void FindQuestFolder_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
@@ -144,7 +206,6 @@ namespace FTB_Quests
                 }
                 SaveConfig();
             }
-
         }
 
         private void DatabaseFile_Click(object sender, EventArgs e)
@@ -152,7 +213,7 @@ namespace FTB_Quests
             using (var openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Title = "Select an SQL Database";
-                openFileDialog.Filter = "TXT files (*.db)|*.db";
+                openFileDialog.Filter = "DB files (*.db)|*.db";
                 openFileDialog.DefaultExt = "db";
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -160,8 +221,8 @@ namespace FTB_Quests
                 }
                 SaveConfig();
             }
-
         }
+
         public void UpdateTextBoxes(string projectFolderPath)
         {
             string mostRecentFile = GetMostRecentFile(projectFolderPath, "pmdumper\\shaped_recipes*.csv");
@@ -179,6 +240,7 @@ namespace FTB_Quests
             OreDictFileLocation.Text = Path.Combine(projectFolderPath, "dumps\\itemdump.txt");
             DatabaseFile.Text = config.DatabaseFile;
         }
+
         public string GetMostRecentFile(string folderPath, string searchPattern)
         {
             var directoryInfo = new DirectoryInfo(folderPath);

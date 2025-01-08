@@ -56,6 +56,7 @@
     <Compile Include="BuildQuests.Designer.cs">
       <DependentUpon>BuildQuests.cs</DependentUpon>
     </Compile>
+    <Compile Include="CachingSystem.cs" />
     <Compile Include="Configuration.cs">
       <SubType>Form</SubType>
     </Compile>
