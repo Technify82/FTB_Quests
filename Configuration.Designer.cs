@@ -45,12 +45,14 @@
             this.DatabaseFile = new System.Windows.Forms.TextBox();
             this.DatabaseFileButton = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.General = new System.Windows.Forms.TabPage();
+            this.SwitchPathsButton = new System.Windows.Forms.Button();
+            this.CacheButton = new System.Windows.Forms.Button();
+            this.Cache = new System.Windows.Forms.TabPage();
             this.CacheInfoBox = new System.Windows.Forms.RichTextBox();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.General.SuspendLayout();
+            this.Cache.SuspendLayout();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -178,48 +180,72 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl1.Controls.Add(this.General);
+            this.tabControl1.Controls.Add(this.Cache);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(660, 537);
             this.tabControl1.TabIndex = 21;
+            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
-            // tabPage1
+            // General
             // 
-            this.tabPage1.Controls.Add(this.projectFolder);
-            this.tabPage1.Controls.Add(this.DatabaseFileButton);
-            this.tabPage1.Controls.Add(this.findRecipeFile);
-            this.tabPage1.Controls.Add(this.DatabaseFile);
-            this.tabPage1.Controls.Add(this.findImagePanelFile);
-            this.tabPage1.Controls.Add(this.OreDictButton);
-            this.tabPage1.Controls.Add(this.findImageFolder);
-            this.tabPage1.Controls.Add(this.OreDictFileLocation);
-            this.tabPage1.Controls.Add(this.recipeFileTextBox);
-            this.tabPage1.Controls.Add(this.FindQuestFolder);
-            this.tabPage1.Controls.Add(this.itemPanelFileTextBox);
-            this.tabPage1.Controls.Add(this.QuestFolderLocation);
-            this.tabPage1.Controls.Add(this.imageFolderTextBox);
-            this.tabPage1.Controls.Add(this.projectFolderTextBox);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(652, 511);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.General.Controls.Add(this.SwitchPathsButton);
+            this.General.Controls.Add(this.CacheButton);
+            this.General.Controls.Add(this.projectFolder);
+            this.General.Controls.Add(this.DatabaseFileButton);
+            this.General.Controls.Add(this.findRecipeFile);
+            this.General.Controls.Add(this.DatabaseFile);
+            this.General.Controls.Add(this.findImagePanelFile);
+            this.General.Controls.Add(this.OreDictButton);
+            this.General.Controls.Add(this.findImageFolder);
+            this.General.Controls.Add(this.OreDictFileLocation);
+            this.General.Controls.Add(this.recipeFileTextBox);
+            this.General.Controls.Add(this.FindQuestFolder);
+            this.General.Controls.Add(this.itemPanelFileTextBox);
+            this.General.Controls.Add(this.QuestFolderLocation);
+            this.General.Controls.Add(this.imageFolderTextBox);
+            this.General.Controls.Add(this.projectFolderTextBox);
+            this.General.Location = new System.Drawing.Point(4, 22);
+            this.General.Name = "General";
+            this.General.Padding = new System.Windows.Forms.Padding(3);
+            this.General.Size = new System.Drawing.Size(652, 511);
+            this.General.TabIndex = 0;
+            this.General.Text = "General";
+            this.General.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // SwitchPathsButton
             // 
-            this.tabPage2.Controls.Add(this.CacheInfoBox);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(652, 511);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.SwitchPathsButton.Location = new System.Drawing.Point(194, 238);
+            this.SwitchPathsButton.Name = "SwitchPathsButton";
+            this.SwitchPathsButton.Size = new System.Drawing.Size(150, 50);
+            this.SwitchPathsButton.TabIndex = 22;
+            this.SwitchPathsButton.Text = "Switch Paths";
+            this.SwitchPathsButton.UseVisualStyleBackColor = true;
+            // 
+            // CacheButton
+            // 
+            this.CacheButton.Location = new System.Drawing.Point(38, 238);
+            this.CacheButton.Name = "CacheButton";
+            this.CacheButton.Size = new System.Drawing.Size(150, 50);
+            this.CacheButton.TabIndex = 21;
+            this.CacheButton.Text = "Cache";
+            this.CacheButton.UseVisualStyleBackColor = true;
+            // 
+            // Cache
+            // 
+            this.Cache.Controls.Add(this.CacheInfoBox);
+            this.Cache.Location = new System.Drawing.Point(4, 22);
+            this.Cache.Name = "Cache";
+            this.Cache.Padding = new System.Windows.Forms.Padding(3);
+            this.Cache.Size = new System.Drawing.Size(652, 511);
+            this.Cache.TabIndex = 1;
+            this.Cache.Text = "Cache";
+            this.Cache.UseVisualStyleBackColor = true;
             // 
             // CacheInfoBox
             // 
@@ -238,9 +264,9 @@
             this.Name = "Configuration";
             this.Text = "Configuration";
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
+            this.General.ResumeLayout(false);
+            this.General.PerformLayout();
+            this.Cache.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -264,8 +290,10 @@
         private System.Windows.Forms.TextBox DatabaseFile;
         private System.Windows.Forms.Button DatabaseFileButton;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage General;
+        private System.Windows.Forms.TabPage Cache;
         private System.Windows.Forms.RichTextBox CacheInfoBox;
+        private System.Windows.Forms.Button SwitchPathsButton;
+        private System.Windows.Forms.Button CacheButton;
     }
 }

@@ -60,6 +60,7 @@
             this.toolStripProgressBar2 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.RecipeText = new System.Windows.Forms.ComboBox();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxOutput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox8)).BeginInit();
@@ -262,6 +263,7 @@
             // 
             this.utilitiesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buildQuestToolStripMenuItem1,
+            this.toolStripMenuItem2,
             this.organizeQuestsToolStripMenuItem,
             this.oreDictionaryToolStripMenuItem});
             this.utilitiesToolStripMenuItem.Name = "utilitiesToolStripMenuItem";
@@ -271,14 +273,14 @@
             // buildQuestToolStripMenuItem1
             // 
             this.buildQuestToolStripMenuItem1.Name = "buildQuestToolStripMenuItem1";
-            this.buildQuestToolStripMenuItem1.Size = new System.Drawing.Size(160, 22);
+            this.buildQuestToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.buildQuestToolStripMenuItem1.Text = "Build Quest";
             this.buildQuestToolStripMenuItem1.Click += new System.EventHandler(this.BuildQuestToolStripMenuItem_Click);
             // 
             // organizeQuestsToolStripMenuItem
             // 
             this.organizeQuestsToolStripMenuItem.Name = "organizeQuestsToolStripMenuItem";
-            this.organizeQuestsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.organizeQuestsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.organizeQuestsToolStripMenuItem.Text = "Organize Quests";
             this.organizeQuestsToolStripMenuItem.Click += new System.EventHandler(this.OrganizeQuestsToolStripMenuItem_Click);
             // 
@@ -288,7 +290,7 @@
             this.addToOreDictionaryToolStripMenuItem,
             this.deleteFromToolStripMenuItem});
             this.oreDictionaryToolStripMenuItem.Name = "oreDictionaryToolStripMenuItem";
-            this.oreDictionaryToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.oreDictionaryToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.oreDictionaryToolStripMenuItem.Text = "OreDictionary";
             // 
             // addToOreDictionaryToolStripMenuItem
@@ -349,6 +351,13 @@
             this.RecipeText.Size = new System.Drawing.Size(494, 21);
             this.RecipeText.TabIndex = 47;
             this.RecipeText.SelectedIndexChanged += new System.EventHandler(this.RecipeText_SelectedIndexChanged);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenuItem2.Text = "Test Quests";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // MainForm
             // 
@@ -423,5 +432,6 @@
         private System.Windows.Forms.ToolStripMenuItem addToOreDictionaryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteFromToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem organizeQuestsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
     }
 }

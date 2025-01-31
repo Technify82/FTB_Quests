@@ -118,14 +118,6 @@ namespace FTB_Quests
             }
         }
 
-
-
-
-
-
-
-
-
         private bool CheckDatabaseData(SQLiteConnection connection)
         {
             string checkDataQuery = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND (name='IngredientLookup' OR name='Recipes')";
@@ -145,39 +137,53 @@ namespace FTB_Quests
         private List<string> ParseRecipeGroups(string recipeFilePath)
         {
             var recipeGroups = new List<string>();
-            var lines = File.ReadAllLines(recipeFilePath);
-            var currentRecipe = new StringBuilder();
-            bool inQuotes = false;
-            form.toolStripProgressBar1.Value = 0;
-            form.toolStripProgressBar1.Maximum = lines.Length;
 
-            for (int i = 1; i < lines.Length; i++)
+            if (string.IsNullOrWhiteSpace(recipeFilePath))
             {
-
-                var line = lines[i];
-                foreach (char c in line)
-                {
-                    if (c == '\"')
-                    {
-                        inQuotes = !inQuotes;
-                    }
-                }
-                currentRecipe.AppendLine(line);
-                if (!inQuotes && Regex.IsMatch(line, @"\b[1-3],[1-3]\b"))
-                {
-                    recipeGroups.Add(currentRecipe.ToString().Trim());
-                    currentRecipe.Clear();
-                }
-                form.toolStripProgressBar1.Value++;
+                MessageBox.Show("The recipe file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return recipeGroups; // Early return on invalid path
             }
 
-            if (currentRecipe.Length > 0)
+            try
             {
-                recipeGroups.Add(currentRecipe.ToString().Trim());
+                var lines = File.ReadAllLines(recipeFilePath);
+                var currentRecipe = new StringBuilder();
+                bool inQuotes = false;
+                form.toolStripProgressBar1.Value = 0;
+                form.toolStripProgressBar1.Maximum = lines.Length;
+
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+                    foreach (char c in line)
+                    {
+                        if (c == '\"')
+                        {
+                            inQuotes = !inQuotes;
+                        }
+                    }
+                    currentRecipe.AppendLine(line);
+                    if (!inQuotes && Regex.IsMatch(line, @"\b[1-3],[1-3]\b"))
+                    {
+                        recipeGroups.Add(currentRecipe.ToString().Trim());
+                        currentRecipe.Clear();
+                    }
+                    form.toolStripProgressBar1.Value++;
+                }
+
+                if (currentRecipe.Length > 0)
+                {
+                    recipeGroups.Add(currentRecipe.ToString().Trim());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while reading the recipe file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return recipeGroups;
         }
+
 
         private Dictionary<string, TempItems> LoadItemPanelItems(string itempanelfile)
         {
@@ -453,6 +459,106 @@ namespace FTB_Quests
             }
         }
 
+        //public void ParseRecipeFile()
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(connectionString))
+        //        {
+        //            throw new ArgumentException("Database connection string cannot be empty.");
+        //        }
+
+        //        using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+        //        {
+        //            connection.Open();
+        //            bool hasData = CheckDatabaseData(connection);
+        //            if (hasData)
+        //            {
+        //                if (PromptDatabasePurge())
+        //                {
+        //                    databaseIO.PurgeDatabase();
+        //                }
+        //                else
+        //                {
+        //                    return;
+        //                }
+        //            }
+        //            connection.Close();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    form.toolStripProgressBar1.Value = 0;
+        //    form.toolStripProgressBar2.Value = 0;
+        //    form.toolStripProgressBar2.Maximum = 9;
+        //    var recipeGroups = ParseRecipeGroups(ConfigManager.ConfigProperties.RecipeFile);
+        //    form.toolStripProgressBar2.Value++;
+        //    form.toolStripStatusLabel1.Text = "Loading Items";
+        //    Application.DoEvents();
+        //    var itemPanelItems = LoadItemPanelItems(itempanelfile);
+        //    form.toolStripProgressBar2.Value++;
+        //    form.toolStripStatusLabel1.Text = "Compiling Ore Dictionary";
+        //    Application.DoEvents();
+        //    var oreDictItems = LoadOreDictionary(ConfigManager.ConfigProperties.OreDictionary);
+        //    form.toolStripProgressBar2.Value++;
+        //    form.toolStripStatusLabel1.Text = "Parsing Recipes";
+        //    Application.DoEvents();
+        //    var parsedRecipes = ParseRecipes(recipeGroups);
+        //    form.toolStripProgressBar1.Maximum = parsedRecipes.Count;
+
+        //    foreach (var recipe in parsedRecipes)
+        //    {
+        //        recipe.Ingredients = UpdateIngredientsWithDisplayNames(recipe.Ingredients, itemPanelItems);
+        //    }
+
+        //    using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+        //    {
+        //        connection.Open();
+        //        using (SQLiteTransaction transaction = connection.BeginTransaction())
+        //        {
+        //            try
+        //            {
+        //                form.toolStripStatusLabel1.Text = "Inserting Recipes";
+        //                Application.DoEvents();
+        //                InsertRecipes(connection, transaction, parsedRecipes);
+        //                form.toolStripProgressBar2.Value++;
+        //                Application.DoEvents();
+        //                var recipes = LoadRecipes(connection, transaction);
+        //                form.toolStripProgressBar2.Value++;
+        //                form.toolStripStatusLabel1.Text = "Updating Recipes";
+        //                Application.DoEvents();
+        //                UpdateRecipes(connection, transaction, recipes, itemPanelItems);
+        //                form.toolStripProgressBar2.Value++;
+        //                form.toolStripStatusLabel1.Text = "Inserting Additional Items";
+        //                Application.DoEvents();
+        //                InsertNewItems(connection, transaction, itemPanelItems);
+        //                form.toolStripProgressBar2.Value++;
+        //                form.toolStripStatusLabel1.Text = "Updating Ore Dictionary";
+        //                Application.DoEvents();
+        //                UpdateOreDictionary(connection, transaction, oreDictItems);
+        //                form.toolStripProgressBar2.Value++;
+        //                Application.DoEvents();
+        //                transaction.Commit();
+        //            }
+        //            catch (SQLiteException ex)
+        //            {
+        //                Console.WriteLine($"SQLite Error: {ex.Message}");
+        //                transaction.Rollback();
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Console.WriteLine($"Error: {ex.Message}");
+        //                transaction.Rollback();
+        //            }
+        //        }
+        //        connection.Close();
+        //    }
+        //}
+
         public void ParseRecipeFile()
         {
             try
@@ -477,7 +583,6 @@ namespace FTB_Quests
                             return;
                         }
                     }
-                    connection.Close();
                 }
             }
             catch (Exception ex)
@@ -489,18 +594,41 @@ namespace FTB_Quests
             form.toolStripProgressBar1.Value = 0;
             form.toolStripProgressBar2.Value = 0;
             form.toolStripProgressBar2.Maximum = 9;
-            var recipeGroups = ParseRecipeGroups(ConfigManager.Config.RecipeFile);
+
+            var recipeFilePath = ConfigManager.Config.RecipeFile;
+            if (string.IsNullOrWhiteSpace(recipeFilePath))
+            {
+                MessageBox.Show("The recipe file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var recipeGroups = ParseRecipeGroups(recipeFilePath);
             form.toolStripProgressBar2.Value++;
             form.toolStripStatusLabel1.Text = "Loading Items";
             Application.DoEvents();
-            var itemPanelItems = LoadItemPanelItems(itempanelfile);
+
+            string itemPanelFilePath = ConfigManager.Config.ItemPanelFile;
+            if (string.IsNullOrWhiteSpace(itemPanelFilePath))
+            {
+                MessageBox.Show("The item panel file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var itemPanelItems = LoadItemPanelItems(itemPanelFilePath);
             form.toolStripProgressBar2.Value++;
             form.toolStripStatusLabel1.Text = "Compiling Ore Dictionary";
             Application.DoEvents();
-            var oreDictItems = LoadOreDictionary(ConfigManager.Config.OreDictionary);
+
+            var oreDictFilePath = ConfigManager.Config.OreDictionary;
+            if (string.IsNullOrWhiteSpace(oreDictFilePath))
+            {
+                MessageBox.Show("The ore dictionary file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var oreDictItems = LoadOreDictionary(oreDictFilePath);
             form.toolStripProgressBar2.Value++;
             form.toolStripStatusLabel1.Text = "Parsing Recipes";
             Application.DoEvents();
+
             var parsedRecipes = ParseRecipes(recipeGroups);
             form.toolStripProgressBar1.Maximum = parsedRecipes.Count;
 
@@ -521,6 +649,7 @@ namespace FTB_Quests
                         InsertRecipes(connection, transaction, parsedRecipes);
                         form.toolStripProgressBar2.Value++;
                         Application.DoEvents();
+
                         var recipes = LoadRecipes(connection, transaction);
                         form.toolStripProgressBar2.Value++;
                         form.toolStripStatusLabel1.Text = "Updating Recipes";
@@ -540,16 +669,15 @@ namespace FTB_Quests
                     }
                     catch (SQLiteException ex)
                     {
-                        Console.WriteLine($"SQLite Error: {ex.Message}");
+                        MessageBox.Show($"SQLite Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         transaction.Rollback();
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: {ex.Message}");
+                        MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         transaction.Rollback();
                     }
                 }
-                connection.Close();
             }
         }
 

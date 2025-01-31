@@ -12,8 +12,9 @@ namespace FTB_Quests
         private DataDisplay dataDisplay;
         private PopulateRecipeGrid populateRecipeGrid;
         private BuildQuests buildQuests;
-        private QuestGridForm questGridForm;
+        //private QuestGridForm questGridForm;
         OreDictLogic oreDictLogic;
+        private QuestUI questUI;
         public MainForm()
         {
             InitializeComponent();
@@ -39,7 +40,8 @@ namespace FTB_Quests
                     populateRecipeGrid = new PopulateRecipeGrid(this);
                     dataDisplay.DataDisplay_Load();
                     buildQuests = new BuildQuests();
-                    questGridForm = new QuestGridForm();
+                    //questGridForm = new QuestGridForm();
+                    questUI = new QuestUI();
                     componentsInitialized = true;
 
                 }
@@ -127,12 +129,22 @@ namespace FTB_Quests
 
         private void OrganizeQuestsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (questGridForm == null || questGridForm.IsDisposed)
+            //if (questGridForm == null || questGridForm.IsDisposed)
+            //{
+            //    questGridForm = new QuestGridForm();
+            //}
+
+            //questGridForm.Show();
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (questUI == null || questUI.IsDisposed)
             {
-                questGridForm = new QuestGridForm();
+                questUI = new QuestUI();
             }
 
-            questGridForm.Show();
+            questUI.Show();
         }
     }
 }

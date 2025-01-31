@@ -8,36 +8,30 @@ namespace FTB_Quests
 {
     public partial class Configuration : Form
     {
-        public Config config;
+        public ConfigProperties config;
 
         public Configuration()
         {
             InitializeComponent();
             LoadConfiguration();
             PopulateTextBoxes();
-
-            // Subscribe to the Form.Load event
             Load += Configuration_Load;
         }
 
         private void Configuration_Load(object sender, EventArgs e)
         {
+            LoadConfiguration();
+            PopulateTextBoxes();
+
             if (string.IsNullOrEmpty(config.ProjectFolder) || !Directory.Exists(config.ProjectFolder))
             {
                 MessageBox.Show("Please set a valid project folder before proceeding.", "Project Folder Missing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                // Simulate a click on the Project Folder button
                 projectFolder.PerformClick();
             }
             else
             {
-                string fullPath = config.ProjectFolder;
-                string projectFolder = Path.GetFileName(fullPath);
-
-                CachingSystem.InitializeCaching(projectFolder, CacheInfoBox);
-                CachingSystem.ScanProjectFilesForChanges(projectFolder, CacheInfoBox);
-
-                // Start the cache timer with an interval of 5 minutes (300,000 milliseconds)
-                CachingSystem.StartCacheTimer(projectFolder, CacheInfoBox, 300000);
+                CachingSystem.InitializeCaching(config, CacheInfoBox);
+                UpdateTextBoxes(config.ProjectFolder);
             }
         }
 
@@ -49,7 +43,7 @@ namespace FTB_Quests
                 try
                 {
                     string json = File.ReadAllText(configFilePath);
-                    config = JsonSerializer.Deserialize<Config>(json);
+                    config = JsonSerializer.Deserialize<ConfigProperties>(json);
                 }
                 catch (Exception ex)
                 {
@@ -59,11 +53,10 @@ namespace FTB_Quests
             else
             {
                 MessageBox.Show("Configuration file not found.", "File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                config = new Config();
+                config = new ConfigProperties();
             }
         }
 
-        // Add an event handler for the ProjectFolder button to re-enable controls once the project folder is set
         public void ProjectFolder_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
@@ -73,25 +66,20 @@ namespace FTB_Quests
                 if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                 {
                     projectFolderTextBox.Text = folderBrowserDialog.SelectedPath;
-                    config.ProjectFolder = folderBrowserDialog.SelectedPath; // Update the project folder in the config
+                    config.ProjectFolder = folderBrowserDialog.SelectedPath;
+
+
+                    CachingSystem.InitializeCaching(config, CacheInfoBox);
+                    UpdateTextBoxes(config.ProjectFolder);
                     SaveConfig();
-
-                    string fullPath = config.ProjectFolder;
-                    string projectFolder = Path.GetFileName(fullPath);
-
-                    // Reinitialize caching with the new project folder
-                    CachingSystem.InitializeCaching(projectFolder, CacheInfoBox);
-                    CachingSystem.ScanProjectFilesForChanges(projectFolder, CacheInfoBox);
-                    CachingSystem.StartCacheTimer(projectFolder, CacheInfoBox, 300000);
-
-                    EnableControls(); // Re-enable controls
+                    EnableControls();
                 }
             }
         }
 
+
         private void DisableControls()
         {
-            // Disable all controls except the ones needed to set the project folder
             foreach (Control ctrl in Controls)
             {
                 if (ctrl.Name != "projectFolderTextBox" && ctrl.Name != "ProjectFolderButton")
@@ -103,13 +91,11 @@ namespace FTB_Quests
 
         private void EnableControls()
         {
-            // Re-enable all controls
             foreach (Control ctrl in Controls)
             {
                 ctrl.Enabled = true;
             }
         }
-
 
         public void SaveConfig()
         {
@@ -241,6 +227,7 @@ namespace FTB_Quests
             DatabaseFile.Text = config.DatabaseFile;
         }
 
+
         public string GetMostRecentFile(string folderPath, string searchPattern)
         {
             var directoryInfo = new DirectoryInfo(folderPath);
@@ -249,39 +236,26 @@ namespace FTB_Quests
                                     .FirstOrDefault();
             return file?.FullName;
         }
-    }
 
-    public class Config
-    {
-        public string ProjectFolder { get; set; }
-        public string RecipeFile { get; set; }
-        public string ItemPanelFile { get; set; }
-        public string ImageFolder { get; set; }
-        public string QuestFolder { get; set; }
-        public string OreDictionary { get; set; }
-        public string DatabaseFile { get; set; }
-    }
 
-    public static class ConfigManager
-    {
-        public static Config Config { get; set; }
-
-        static ConfigManager()
+        private void PerformCachingButton_Click(object sender, EventArgs e)
         {
-            LoadConfiguration();
         }
 
-        public static void LoadConfiguration()
+        private void SwitchToCachedPathsButton_Click(object sender, EventArgs e)
         {
-            if (File.Exists("Configuration.json"))
-            {
-                string json = File.ReadAllText("Configuration.json");
-                Config = JsonSerializer.Deserialize<Config>(json);
-            }
-            else
-            {
-                Config = new Config();
-            }
+            config.SwitchToCachedPaths();
+            MessageBox.Show("Switched to cached paths.");
+        }
+
+        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            string baseCacheDir = Path.Combine(Environment.CurrentDirectory, "Cache", Path.GetFileName(config.ProjectFolder));
+            CachingSystem.EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
+
+            CacheInfoBox.AppendText("Copying config locations to cache...\n");
+            CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox);
+            MessageBox.Show("Caching completed.");
         }
     }
 }

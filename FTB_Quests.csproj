@@ -57,6 +57,8 @@
       <DependentUpon>BuildQuests.cs</DependentUpon>
     </Compile>
     <Compile Include="CachingSystem.cs" />
+    <Compile Include="ConfigManager.cs" />
+    <Compile Include="ConfigProperties.cs" />
     <Compile Include="Configuration.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,6 +71,13 @@
     </Compile>
     <Compile Include="DataDisplay.Designer.cs">
       <DependentUpon>DataDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="QuestTreeViewManager.cs" />
+    <Compile Include="QuestUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QuestUI.Designer.cs">
+      <DependentUpon>QuestUI.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -83,10 +92,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuestBuilder.cs" />
     <Compile Include="QuestDirectory.cs" />
-    <Compile Include="QuestGridForm.cs">
+    <Compile Include="QuestUICanvasPopulation.cs" />
+    <Compile Include="QuestUIDependenciesDisplay.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="QuestTreeViewManager.cs" />
+    <Compile Include="QuestUIDragDropLogic.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QuestUILogic.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <EmbeddedResource Include="BuildQuests.resx">
       <DependentUpon>BuildQuests.cs</DependentUpon>
     </EmbeddedResource>
@@ -108,9 +123,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="QuestGridForm.resx">
-      <DependentUpon>QuestGridForm.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -142,6 +154,9 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="QuestUI.resx">
+      <DependentUpon>QuestUI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Woops.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

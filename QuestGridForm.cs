@@ -6,126 +6,39 @@ using System.Windows.Forms;
 
 namespace FTB_Quests
 {
-    public class QuestGridForm : Form
+    public partial class QuestGridForm : Form
     {
         private QuestTreeViewManager questTreeViewManager;
         private string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
-
-        private System.ComponentModel.IContainer components;
-        private MenuStrip menuStrip1;
-        private ToolStripMenuItem stuffToolStripMenuItem;
-        private ToolStripMenuItem optionsToolStripMenuItem;
-        private ToolStripMenuItem hideBrokenItemsToolStripMenuItem;
-        private TableLayoutPanel questGridControl;
-        private TreeView questTreeView;
-        private ToolTip toolTip;   
+        private Timer holdTimer;
 
         public QuestGridForm()
         {
             InitializeComponent();
             SetupQuestGrid();
             InitializeTreeViewManager();
+            holdTimer = new Timer();
+            holdTimer.Interval = 1500;
+            holdTimer.Tick += HoldTimer_Tick;
+
+            if (questGridControl == null)
+            {
+                questGridControl = new TableLayoutPanel
+                {
+                    // Set appropriate properties for questGridControl
+                };
+            }
         }
 
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.stuffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hideBrokenItemsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.questGridControl = new System.Windows.Forms.TableLayoutPanel();
-            this.questTreeView = new System.Windows.Forms.TreeView();
-            this.menuStrip1.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.stuffToolStripMenuItem,
-            this.optionsToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1811, 24);
-            this.menuStrip1.TabIndex = 1;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
-            // stuffToolStripMenuItem
-            // 
-            this.stuffToolStripMenuItem.Name = "stuffToolStripMenuItem";
-            this.stuffToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.stuffToolStripMenuItem.Text = "Stuff";
-            // 
-            // optionsToolStripMenuItem
-            // 
-            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.hideBrokenItemsToolStripMenuItem});
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsToolStripMenuItem.Text = "Options";
-            // 
-            // hideBrokenItemsToolStripMenuItem
-            // 
-            this.hideBrokenItemsToolStripMenuItem.Name = "hideBrokenItemsToolStripMenuItem";
-            this.hideBrokenItemsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.hideBrokenItemsToolStripMenuItem.Text = "Hide Broken Items";
-            this.hideBrokenItemsToolStripMenuItem.Click += new System.EventHandler(this.HideBrokenItemsToolStripMenuItem_Click);
-            // 
-            // questGridControl
-            // 
-            this.questGridControl.AutoScroll = true;
-            this.questGridControl.ColumnCount = 20;
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
-            this.questGridControl.Location = new System.Drawing.Point(256, 24);
-            this.questGridControl.Name = "questGridControl";
-            this.questGridControl.RowCount = 2;
-            this.questGridControl.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.questGridControl.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.questGridControl.Size = new System.Drawing.Size(1555, 1066);
-            this.questGridControl.TabIndex = 2;
-            // 
-            // questTreeView
-            // 
-            this.questTreeView.Dock = System.Windows.Forms.DockStyle.Left;
-            this.questTreeView.Location = new System.Drawing.Point(0, 24);
-            this.questTreeView.Name = "questTreeView";
-            this.questTreeView.Size = new System.Drawing.Size(250, 1066);
-            this.questTreeView.TabIndex = 1;
-            this.questTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.QuestTreeView_AfterSelect);
-            // 
-            // QuestGridForm
-            // 
-            this.ClientSize = new System.Drawing.Size(1811, 1090);
-            this.Controls.Add(this.questGridControl);
-            this.Controls.Add(this.questTreeView);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
-            this.Name = "QuestGridForm";
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
 
+        public void HoldTimer_Tick(object sender, EventArgs e)
+        {
+            holdTimer.Stop();
+
+            if (currentDragSource != null && currentDragTarget != null)
+            {
+                CreateDynamicPlaceholder();
+            }
         }
 
         private void InitializeTreeViewManager()
@@ -153,206 +66,121 @@ namespace FTB_Quests
 
         private void QuestTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (e.Node != null && e.Node.Tag is DirectoryInfo directoryInfo)
+            questTreeViewManager.questItemsCache.Clear();
+            Console.WriteLine("QuestTreeView_AfterSelect triggered.");
+
+            DirectoryInfo directoryInfo = null;
+
+            if (e.Node != null)
             {
+                Console.WriteLine($"Node selected: {e.Node.Text}");
+
+                if (e.Node.Tag is DirectoryInfo tempDirectoryInfo)
+                {
+                    directoryInfo = tempDirectoryInfo;
+                    Console.WriteLine($"Node tag is a DirectoryInfo: {directoryInfo.FullName}");
+                }
+                else
+                {
+                    Console.WriteLine("Node tag is not a DirectoryInfo.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Selected node is null.");
+            }
+
+            if (directoryInfo != null && DirectoryContainsSNBTFiles(directoryInfo))
+            {
+                Console.WriteLine("Directory contains .snbt files.");
+
                 questTreeViewManager.PreloadData(connectionString);
+                Console.WriteLine("Preloaded data.");
 
                 DisplayQuestsInGrid(directoryInfo);
             }
+            else
+            {
+                Console.WriteLine("Directory does not contain .snbt files or directoryInfo is null.");
+            }
         }
 
-        private void DisplayQuestsInGrid(DirectoryInfo directoryInfo)
+        private bool DirectoryContainsSNBTFiles(DirectoryInfo directoryInfo)
         {
-            questTreeViewManager.PreloadData(connectionString);
+            var excludedFiles = new HashSet<string> { "file.snbt", "index.snbt" };
 
-            var nonBrokenItems = FilterBrokenItems();
+            var snbtFiles = directoryInfo.GetFiles("*.snbt");
 
-            questGridControl.Controls.Clear();
-            questGridControl.RowStyles.Clear();
-            questGridControl.RowCount = 0;
-
-            int columnCount = questGridControl.ColumnCount;
-            int totalItems = 0;
-
-            foreach (var questItem in nonBrokenItems)
+            if (snbtFiles.Length == 0)
             {
-                var pictureBox = new PictureBox
-                {
-                    Image = questItem.QuestImage,
-                    SizeMode = PictureBoxSizeMode.StretchImage,
-                    Width = 32,
-                    Height = 32,
-                    Tag = questItem.FileName       
-                };
-
-                EnableDragAndDrop(pictureBox);
-
-                if (questTreeViewManager.DisplayNameCache.ContainsKey(questItem.FileName))
-                {
-                    var displayNames = questTreeViewManager.DisplayNameCache[questItem.FileName];
-                    if (displayNames.Count > 0)
-                    {
-                        toolTip.SetToolTip(pictureBox, displayNames[0]);
-                    }
-                }
-
-                int row = totalItems / (columnCount * 2);
-                int column = (totalItems * 2) % columnCount;
-
-                if (row >= questGridControl.RowCount)
-                {
-                    questGridControl.RowCount++;
-                    questGridControl.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-                }
-
-                questGridControl.Controls.Add(pictureBox, column, row);
-                totalItems++;
-
-                Console.WriteLine($"Added non-broken item: {questItem.FileName} at row {row}, column {column}");
+                return false;
             }
 
-            var woopsImage = questTreeViewManager.GetEmbeddedImage("Woops.png");
-            while (totalItems < columnCount * questGridControl.RowCount / 2)
+            foreach (var file in snbtFiles)
             {
-                int row = totalItems / (columnCount * 2);
-                int column = (totalItems * 2) % columnCount;
-
-                var pictureBox = new PictureBox
+                if (!excludedFiles.Contains(file.Name))
                 {
-                    Image = woopsImage,
-                    SizeMode = PictureBoxSizeMode.StretchImage,
-                    Width = 32,
-                    Height = 32
-                };
-
-                EnableDragAndDrop(pictureBox);
-
-                questGridControl.Controls.Add(pictureBox, column, row);
-                totalItems++;
-
-                Console.WriteLine($"Added 'Woops' image at row {row}, column {column}");
+                    return true;
+                }
             }
+
+            return false;
         }
 
-        private void HideBrokenItemsToolStripMenuItem_Click(object sender, EventArgs e)
+        public static string GetRelativePath(string basePath, string targetPath)
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(ConfigManager.Config.QuestFolder);
+            Console.WriteLine($"Calculating relative path from basePath: {basePath} to targetPath: {targetPath}");
 
-            questGridControl.Controls.Clear();
-            questGridControl.RowStyles.Clear();
-            questGridControl.RowCount = 0;
+            Uri baseUri = new Uri(AppendDirectorySeparator(basePath), UriKind.Absolute);
+            Uri targetUri = new Uri(AppendDirectorySeparator(targetPath), UriKind.Absolute);
 
-            int columnCount = questGridControl.ColumnCount;
-            int totalItems = 0;
+            Uri relativeUri = baseUri.MakeRelativeUri(targetUri);
+            string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
 
-            foreach (var file in directoryInfo.GetFiles("*.snbt"))
-            {
-                var displayNames = questTreeViewManager.GetQuestDisplayNames(file.Name, connectionString);
-                var questImage = questTreeViewManager.LoadQuestImage(file.Name, connectionString);
+            Console.WriteLine($"Relative path: {relativePath}");
 
-                var pictureBox = new PictureBox
-                {
-                    Image = questImage,
-                    SizeMode = PictureBoxSizeMode.StretchImage,
-                    Width = 32,
-                    Height = 32,
-                    Tag = file.Name       
-                };
-
-                EnableDragAndDrop(pictureBox);
-
-                if (displayNames.Count > 0)
-                {
-                    toolTip.SetToolTip(pictureBox, displayNames[0]);
-                }
-
-                int row = totalItems / (columnCount * 2);
-                int column = (totalItems * 2) % columnCount;
-
-                if (row >= questGridControl.RowCount)
-                {
-                    questGridControl.RowCount++;
-                    questGridControl.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-                }
-
-                questGridControl.Controls.Add(pictureBox, column, row);
-                totalItems++;
-
-                Console.WriteLine($"Added item: {file.Name} at row {row}, column {column}");
-            }
-
-            var woopsImage = questTreeViewManager.GetEmbeddedImage("Woops.png");
-            while (totalItems < columnCount * questGridControl.RowCount / 2)
-            {
-                int row = totalItems / (columnCount * 2);
-                int column = (totalItems * 2) % columnCount;
-
-                var pictureBox = new PictureBox
-                {
-                    Image = woopsImage,
-                    SizeMode = PictureBoxSizeMode.StretchImage,
-                    Width = 32,
-                    Height = 32
-                };
-
-                EnableDragAndDrop(pictureBox);
-
-                questGridControl.Controls.Add(pictureBox, column, row);
-                totalItems++;
-
-                Console.WriteLine($"Added 'Woops' image at row {row}, column {column}");
-            }
+            return relativePath.Replace('/', Path.DirectorySeparatorChar);
         }
 
+        private static string AppendDirectorySeparator(string path)
+        {
+            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                path += Path.DirectorySeparatorChar;
+            }
+            return path;
+        }
 
+        public bool IsPathAtDesiredDepth(DirectoryInfo directoryInfo)
+        {
+            string basePath = ConfigManager.Config.QuestFolder;
+            string targetPath = directoryInfo.FullName;
+
+            Console.WriteLine($"Checking path depth for basePath: {basePath} and targetPath: {targetPath}");
+
+            string relativePath = GetRelativePath(basePath, targetPath);
+            int depth = relativePath.Split(Path.DirectorySeparatorChar).Length - 1;
+
+            Console.WriteLine($"Calculated depth: {depth}");
+
+            return depth == 2;
+        }
+
+        private void AddControlsToGrid(List<Control> controls, int column, int row)
+        {
+            questGridControl.SuspendLayout();
+
+            foreach (var control in controls)
+            {
+                questGridControl.Controls.Add(control, column, row);
+            }
+
+            questGridControl.ResumeLayout();
+        }
 
         private List<QuestItem> FilterBrokenItems()
         {
             return questTreeViewManager.questItemsCache.Values.Where(item => !item.IsBroken).ToList();
         }
-
-        private void EnableDragAndDrop(PictureBox pictureBox)
-        {
-            pictureBox.MouseDown += PictureBox_MouseDown;
-            pictureBox.DragEnter += PictureBox_DragEnter;
-            pictureBox.DragDrop += PictureBox_DragDrop;
-        }
-
-        private void PictureBox_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                var pictureBox = sender as PictureBox;
-                if (pictureBox != null)
-                {
-                    pictureBox.DoDragDrop(pictureBox, DragDropEffects.Move);
-                }
-            }
-        }
-
-        private void PictureBox_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(PictureBox)))
-            {
-                e.Effect = DragDropEffects.Move;
-            }
-        }
-
-        private void PictureBox_DragDrop(object sender, DragEventArgs e)
-        {
-            var pictureBox = e.Data.GetData(typeof(PictureBox)) as PictureBox;
-            var targetPictureBox = sender as PictureBox;
-
-            if (pictureBox != null && targetPictureBox != null)
-            {
-                var sourceIndex = questGridControl.Controls.GetChildIndex(pictureBox);
-                var targetIndex = questGridControl.Controls.GetChildIndex(targetPictureBox);
-
-                questGridControl.Controls.SetChildIndex(pictureBox, targetIndex);
-                questGridControl.Controls.SetChildIndex(targetPictureBox, sourceIndex);
-            }
-        }
-
-
     }
 }
