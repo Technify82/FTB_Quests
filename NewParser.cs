@@ -31,13 +31,15 @@ namespace FTB_Quests
     public class NewParser
     {
         private readonly MainForm form;
-        readonly string itempanelfile = ConfigManager.Config.ItemPanelFile;
-        public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
+        ConfigManager configManager;
+        // readonly string itempanelfile = ConfigManager.Config.ItemPanelFile;
+        // public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
         readonly DatabaseIO databaseIO;
         private readonly List<RecipeData> parsedRecipes = new List<RecipeData>();
         public NewParser(MainForm form)
         {
             this.form = form;
+            configManager = ConfigManager.Instance;
             databaseIO = new DatabaseIO();
         }
 
@@ -79,7 +81,7 @@ namespace FTB_Quests
 
         public void CheckDatabaseAndPopulateRecipeText()
         {
-            string dbPath = ConfigManager.Config.DatabaseFile.ToString();
+            string dbPath = configManager.Config.DatabaseFile.ToString();
 
             if (File.Exists(dbPath))
             {
@@ -312,7 +314,7 @@ namespace FTB_Quests
 
         private void InsertRecipes(SQLiteConnection connection, SQLiteTransaction transaction, List<RecipeData> parsedRecipes)
         {
-            const int maxBatchSize = 80;              
+            const int maxBatchSize = 80;
             int totalRecipes = parsedRecipes.Count;
 
             for (int batchStart = 0; batchStart < totalRecipes; batchStart += maxBatchSize)
@@ -326,7 +328,7 @@ namespace FTB_Quests
                     bulkInsertQuery.Append($"(@InputPattern{i}, @A{i}, @B{i}, @C{i}, @D{i}, @E{i}, @F{i}, @G{i}, @H{i}, @I{i}, @OutputItem{i}, @Quantity{i}),");
                 }
 
-                bulkInsertQuery.Length--;     
+                bulkInsertQuery.Length--;
                 bulkInsertQuery.Append(";");
 
                 using (SQLiteCommand command = new SQLiteCommand(bulkInsertQuery.ToString(), connection, transaction))
@@ -459,108 +461,10 @@ namespace FTB_Quests
             }
         }
 
-        //public void ParseRecipeFile()
-        //{
-        //    try
-        //    {
-        //        if (string.IsNullOrEmpty(connectionString))
-        //        {
-        //            throw new ArgumentException("Database connection string cannot be empty.");
-        //        }
-
-        //        using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-        //        {
-        //            connection.Open();
-        //            bool hasData = CheckDatabaseData(connection);
-        //            if (hasData)
-        //            {
-        //                if (PromptDatabasePurge())
-        //                {
-        //                    databaseIO.PurgeDatabase();
-        //                }
-        //                else
-        //                {
-        //                    return;
-        //                }
-        //            }
-        //            connection.Close();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        return;
-        //    }
-
-        //    form.toolStripProgressBar1.Value = 0;
-        //    form.toolStripProgressBar2.Value = 0;
-        //    form.toolStripProgressBar2.Maximum = 9;
-        //    var recipeGroups = ParseRecipeGroups(ConfigManager.ConfigProperties.RecipeFile);
-        //    form.toolStripProgressBar2.Value++;
-        //    form.toolStripStatusLabel1.Text = "Loading Items";
-        //    Application.DoEvents();
-        //    var itemPanelItems = LoadItemPanelItems(itempanelfile);
-        //    form.toolStripProgressBar2.Value++;
-        //    form.toolStripStatusLabel1.Text = "Compiling Ore Dictionary";
-        //    Application.DoEvents();
-        //    var oreDictItems = LoadOreDictionary(ConfigManager.ConfigProperties.OreDictionary);
-        //    form.toolStripProgressBar2.Value++;
-        //    form.toolStripStatusLabel1.Text = "Parsing Recipes";
-        //    Application.DoEvents();
-        //    var parsedRecipes = ParseRecipes(recipeGroups);
-        //    form.toolStripProgressBar1.Maximum = parsedRecipes.Count;
-
-        //    foreach (var recipe in parsedRecipes)
-        //    {
-        //        recipe.Ingredients = UpdateIngredientsWithDisplayNames(recipe.Ingredients, itemPanelItems);
-        //    }
-
-        //    using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        using (SQLiteTransaction transaction = connection.BeginTransaction())
-        //        {
-        //            try
-        //            {
-        //                form.toolStripStatusLabel1.Text = "Inserting Recipes";
-        //                Application.DoEvents();
-        //                InsertRecipes(connection, transaction, parsedRecipes);
-        //                form.toolStripProgressBar2.Value++;
-        //                Application.DoEvents();
-        //                var recipes = LoadRecipes(connection, transaction);
-        //                form.toolStripProgressBar2.Value++;
-        //                form.toolStripStatusLabel1.Text = "Updating Recipes";
-        //                Application.DoEvents();
-        //                UpdateRecipes(connection, transaction, recipes, itemPanelItems);
-        //                form.toolStripProgressBar2.Value++;
-        //                form.toolStripStatusLabel1.Text = "Inserting Additional Items";
-        //                Application.DoEvents();
-        //                InsertNewItems(connection, transaction, itemPanelItems);
-        //                form.toolStripProgressBar2.Value++;
-        //                form.toolStripStatusLabel1.Text = "Updating Ore Dictionary";
-        //                Application.DoEvents();
-        //                UpdateOreDictionary(connection, transaction, oreDictItems);
-        //                form.toolStripProgressBar2.Value++;
-        //                Application.DoEvents();
-        //                transaction.Commit();
-        //            }
-        //            catch (SQLiteException ex)
-        //            {
-        //                Console.WriteLine($"SQLite Error: {ex.Message}");
-        //                transaction.Rollback();
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Console.WriteLine($"Error: {ex.Message}");
-        //                transaction.Rollback();
-        //            }
-        //        }
-        //        connection.Close();
-        //    }
-        //}
-
         public void ParseRecipeFile()
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+
             try
             {
                 if (string.IsNullOrEmpty(connectionString))
@@ -595,7 +499,7 @@ namespace FTB_Quests
             form.toolStripProgressBar2.Value = 0;
             form.toolStripProgressBar2.Maximum = 9;
 
-            var recipeFilePath = ConfigManager.Config.RecipeFile;
+            var recipeFilePath = configManager.Config.RecipeFile;
             if (string.IsNullOrWhiteSpace(recipeFilePath))
             {
                 MessageBox.Show("The recipe file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -607,7 +511,7 @@ namespace FTB_Quests
             form.toolStripStatusLabel1.Text = "Loading Items";
             Application.DoEvents();
 
-            string itemPanelFilePath = ConfigManager.Config.ItemPanelFile;
+            string itemPanelFilePath = configManager.Config.ItemPanelFile;
             if (string.IsNullOrWhiteSpace(itemPanelFilePath))
             {
                 MessageBox.Show("The item panel file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -618,7 +522,7 @@ namespace FTB_Quests
             form.toolStripStatusLabel1.Text = "Compiling Ore Dictionary";
             Application.DoEvents();
 
-            var oreDictFilePath = ConfigManager.Config.OreDictionary;
+            var oreDictFilePath = configManager.Config.OreDictionary;
             if (string.IsNullOrWhiteSpace(oreDictFilePath))
             {
                 MessageBox.Show("The ore dictionary file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

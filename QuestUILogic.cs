@@ -9,7 +9,7 @@ namespace FTB_Quests
 
         private void LoadQuestlines()
         {
-            string questFolder = ConfigManager.Config.QuestFolder;
+            string questFolder = configManager.Config.QuestFolder;
             DirectoryInfo directoryInfo = new DirectoryInfo(questFolder);
 
             if (directoryInfo.Exists)

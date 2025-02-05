@@ -9,18 +9,22 @@ namespace FTB_Quests
 {
     internal class OreDictLogic
     {
-        public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
+       ConfigManager configManager;
         private readonly MainForm form;
 
 
-        public OreDictLogic(string connectionString, MainForm form)
+        public OreDictLogic(MainForm form)
         {
-            this.connectionString = connectionString;
+            configManager = ConfigManager.Instance;
+            
+           //this.connectionString = connectionString;
             this.form = form;
         }
 
         public void CompileOreDictInformation()
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+
             var oreIngredients = new HashSet<string>();
             var oreDictNames = new Dictionary<string, List<string>>();
             var displayNames = new Dictionary<string, string>();
@@ -132,6 +136,7 @@ namespace FTB_Quests
 
         public void DisplayNameFinding(Dictionary<string, string> oreIngredients, Dictionary<string, List<string>> oreDictNames)
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             var ItemNameDictionary = new Dictionary<string, string>
     {
         {"dye", "minecraft:dye" },
@@ -249,6 +254,8 @@ namespace FTB_Quests
 
         public void SwapOreItemsForDisplayNames(Dictionary<string, string> oreIngredients, Dictionary<string, List<string>> oreDictNames, Dictionary<string, string> displayNames)
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+            
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();

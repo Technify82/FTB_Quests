@@ -5,42 +5,45 @@ namespace FTB_Quests
 {
     public partial class MainForm : Form
     {
-        public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
-        private readonly Configuration configuration;
+        ConfigManager configManager;
+                private readonly Configuration configuration;
         private QuestLinker questLinker;
         private NewParser newParser;
         private DataDisplay dataDisplay;
         private PopulateRecipeGrid populateRecipeGrid;
         private BuildQuests buildQuests;
-        //private QuestGridForm questGridForm;
         OreDictLogic oreDictLogic;
         private QuestUI questUI;
+
         public MainForm()
         {
             InitializeComponent();
             Show();
-            configuration = new Configuration();
+            configuration = new Configuration(this);
+            configManager = ConfigManager.Instance;
+
             configuration.LoadConfiguration();
+            configuration.PopulateTextBoxes();
             InitializeComponents();
         }
 
+        
         private bool componentsInitialized = false;
 
         private void InitializeComponents()
         {
             try
             {
-                if (ConfigManager.Config.ProjectFolder != null)
+                if (configManager.Config.ProjectFolder != null)
                 {
                     questLinker = new QuestLinker(this);
                     newParser = new NewParser(this);
                     newParser.CheckDatabaseAndPopulateRecipeText();
-                    oreDictLogic = new OreDictLogic(connectionString, this);
+                    oreDictLogic = new OreDictLogic(this);
                     dataDisplay = new DataDisplay();
                     populateRecipeGrid = new PopulateRecipeGrid(this);
                     dataDisplay.DataDisplay_Load();
                     buildQuests = new BuildQuests();
-                    //questGridForm = new QuestGridForm();
                     questUI = new QuestUI();
                     componentsInitialized = true;
 
@@ -55,6 +58,25 @@ namespace FTB_Quests
                 MessageBox.Show($"An error occurred during initialization: {ex.Message}");
             }
         }
+
+        public void UpdateConfiguration()
+
+        {
+            
+            configuration.LoadConfiguration();    
+ 
+            questLinker = new QuestLinker(this);     
+            newParser = new NewParser(this);
+            newParser.CheckDatabaseAndPopulateRecipeText();
+            oreDictLogic = new OreDictLogic(this);
+            populateRecipeGrid = new PopulateRecipeGrid(this);
+            buildQuests = new BuildQuests();
+            questUI = new QuestUI();
+            dataDisplay.DataDisplay_Load();     
+        }
+
+
+
 
         private void RecipeText_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -91,7 +113,7 @@ namespace FTB_Quests
 
         private void ParseQuestsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (ConfigManager.Config.QuestFolder != null)
+            if (configManager.Config.QuestFolder != null)
             {
                 questLinker.QuestDirectoryScan();
             }
@@ -101,7 +123,7 @@ namespace FTB_Quests
 
         private void ConfigurationToolStrip_Click(object sender, EventArgs e)
         {
-            Configuration configForm = new Configuration();
+            Configuration configForm = new Configuration(this);
             configForm.Show();
         }
 
@@ -125,16 +147,6 @@ namespace FTB_Quests
             }
 
             buildQuests.Show();
-        }
-
-        private void OrganizeQuestsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //if (questGridForm == null || questGridForm.IsDisposed)
-            //{
-            //    questGridForm = new QuestGridForm();
-            //}
-
-            //questGridForm.Show();
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)

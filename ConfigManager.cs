@@ -3,16 +3,35 @@ using System.Text.Json;
 
 namespace FTB_Quests
 {
-    public static class ConfigManager
-    {
-        public static ConfigProperties Config { get; set; }
 
-        static ConfigManager()
+    public class ConfigManager
+    {
+        private static ConfigManager _instance;
+        private static readonly object _lock = new object();
+
+        public ConfigProperties Config { get; private set; }
+
+        private ConfigManager()
         {
             LoadConfiguration();
         }
 
-        public static void LoadConfiguration()
+        public static ConfigManager Instance
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new ConfigManager();
+                    }
+                    return _instance;
+                }
+            }
+        }
+
+        public void LoadConfiguration()
         {
             if (File.Exists("Configuration.json"))
             {
@@ -23,6 +42,12 @@ namespace FTB_Quests
             {
                 Config = new ConfigProperties();
             }
+        }
+
+        public void SaveConfiguration()
+        {
+            string json = JsonSerializer.Serialize(Config, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText("Configuration.json", json);
         }
     }
 }

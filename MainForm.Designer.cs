@@ -282,7 +282,7 @@
             this.organizeQuestsToolStripMenuItem.Name = "organizeQuestsToolStripMenuItem";
             this.organizeQuestsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.organizeQuestsToolStripMenuItem.Text = "Organize Quests";
-            this.organizeQuestsToolStripMenuItem.Click += new System.EventHandler(this.OrganizeQuestsToolStripMenuItem_Click);
+//            this.organizeQuestsToolStripMenuItem.Click += new System.EventHandler(this.OrganizeQuestsToolStripMenuItem_Click);
             // 
             // oreDictionaryToolStripMenuItem
             // 

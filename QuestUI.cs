@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -8,15 +7,15 @@ namespace FTB_Quests
 {
     public partial class QuestUI : Form
     {
-        //private QuestTreeViewManager questTreeViewManager;
-        private readonly string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
+        ConfigManager configManager;
 
         public QuestUI()
         {
             InitializeComponent();
+            configManager = ConfigManager.Instance;
             LoadQuestlines();
             InitializeDragDropHandlers();
-                    }
+        }
 
         private void InitializeDragDropHandlers()
         {
@@ -27,7 +26,7 @@ namespace FTB_Quests
 
         private void QuestList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Console.WriteLine(QuestList.SelectedIndex.ToString());
+
             var selectedFolderName = QuestList.SelectedItem.ToString();
 
             if (questFolderPaths.TryGetValue(selectedFolderName, out var selectedFolderPath))
@@ -42,7 +41,7 @@ namespace FTB_Quests
                     Console.WriteLine("Selected directory does not contain valid .snbt files.");
                 }
                 Application.DoEvents();
-                LoadDependenciesForSelectedIndex(); // Load dependencies based on the selected index
+                LoadDependenciesForSelectedIndex();
                 DrawDependencies();
             }
         }

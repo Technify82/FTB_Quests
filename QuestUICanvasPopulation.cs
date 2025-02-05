@@ -22,9 +22,12 @@ namespace FTB_Quests
         private readonly Dictionary<string, QuestItem> questItemsCache = new Dictionary<string, QuestItem>();
         private readonly Dictionary<string, List<string>> displayNameCache = new Dictionary<string, List<string>>();
         private readonly Dictionary<string, string> questFolderPaths = new Dictionary<string, string>();
+        //ConfigManager configManager;
 
         private void DisplayQuestsInCanvas()
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+            // configManager = ConfigManager.Instance;
             PreloadData(connectionString);
             var nonBrokenItems = FilterBrokenItems();
             QuestPanel.Controls.Clear();
@@ -245,7 +248,7 @@ namespace FTB_Quests
 
             foreach (var displayName in displayNames)
             {
-                string imagesDirectory = ConfigManager.Config.ImageFolder;
+                string imagesDirectory = configManager.Config.ImageFolder;
                 string imagePath = Path.Combine(imagesDirectory, Path.GetFileNameWithoutExtension(displayName) + ".png");
 
                 if (File.Exists(imagePath))

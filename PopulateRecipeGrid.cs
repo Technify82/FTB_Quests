@@ -11,18 +11,22 @@ namespace FTB_Quests
     public class PopulateRecipeGrid
     {
         public MainForm form;
-        public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
-        public string ImageFolder = ConfigManager.Config.ImageFolder;
+        ConfigManager configManager;
+        //public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
+        //public string ImageFolder = ConfigManager.Config.ImageFolder;
         private readonly QuestLinker questLinker;
 
         public PopulateRecipeGrid(MainForm form)
         {
             this.form = form;
+            configManager = ConfigManager.Instance;
             questLinker = new QuestLinker(form);
         }
 
         public void GridParser(ComboBox comboBox, Form parentForm)
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+
             if (string.IsNullOrEmpty(connectionString))
             {
                 MessageBox.Show("Connection string is invalid");
@@ -72,7 +76,7 @@ namespace FTB_Quests
                 {
                     try
                     {
-                        string imagePath = Path.Combine(ImageFolder, ingredient + ".png");
+                        string imagePath = Path.Combine(configManager.Config.ImageFolder, ingredient + ".png");
 
                         if (File.Exists(imagePath))
                         {
@@ -166,7 +170,7 @@ namespace FTB_Quests
                 displayName = displayName.Replace(c.ToString(), "");
             }
 
-            string imageFilePath = Path.Combine(ImageFolder, displayName + ".png");
+            string imageFilePath = Path.Combine(configManager.Config.ImageFolder, displayName + ".png");
 
             if (!File.Exists(imageFilePath))
             {

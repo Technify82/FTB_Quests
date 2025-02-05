@@ -5,10 +5,15 @@ namespace FTB_Quests
 {
     public class DatabaseIO
     {
-        private readonly static string connectionString = ($"Data Source={ConfigManager.Config.DatabaseFile};Version=3;");
-
+        ConfigManager configManager;
+        
+        public DatabaseIO()
+        {
+            configManager = ConfigManager.Instance;
+        }
         public void PurgeDatabase()
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
@@ -45,6 +50,7 @@ namespace FTB_Quests
         }
         public void CreateTables()
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();

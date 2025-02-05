@@ -13,15 +13,18 @@ namespace FTB_Quests
     {
         private readonly MainForm form;
         private readonly Dictionary<string, string> fileMap = new Dictionary<string, string>();
-        public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
+        ConfigManager configManager;
+       // public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
 
         public QuestLinker(MainForm form)
         {
             this.form = form;
+            configManager = ConfigManager.Instance;
         }
 
         public void QuestDirectoryScan()
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             var overallStartTime = DateTime.Now;
 
             form.toolStripStatusLabel1.Text = $"{overallStartTime}: QuestDirectoryScan Start";
@@ -29,7 +32,7 @@ namespace FTB_Quests
 
             bool columnExists = CheckIfColumnExists("Quests");
 
-            string folderPath = ConfigManager.Config.QuestFolder;
+            string folderPath = configManager.Config.QuestFolder;
 
             if (Directory.Exists(folderPath))
             {
@@ -43,7 +46,7 @@ namespace FTB_Quests
                     using (var transaction = connection.BeginTransaction())
                     {
                         form.toolStripProgressBar2.Value = 0;
-                        form.toolStripProgressBar2.Maximum = itemIdToQuestMap.Count + uidToQuestMap.Count;     
+                        form.toolStripProgressBar2.Maximum = itemIdToQuestMap.Count + uidToQuestMap.Count;
 
                         var dbUpdateStartTime = DateTime.Now;
                         BatchUpdateDatabase(itemIdToQuestMap, uidToQuestMap, connection, transaction);
@@ -65,6 +68,8 @@ namespace FTB_Quests
 
         private bool CheckIfColumnExists(string columnName)
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
@@ -179,7 +184,7 @@ namespace FTB_Quests
                 if (line.Contains("tasks:"))
                 {
                     insideTasks = true;
-                    continue;          
+                    continue;
                 }
 
                 if (insideTasks)
@@ -195,7 +200,7 @@ namespace FTB_Quests
                             uidToQuestMap[uid] = new List<string>();
                         }
                         uidToQuestMap[uid].Add(filename);
-                        insideTasks = false;         
+                        insideTasks = false;
                     }
                 }
 
@@ -210,7 +215,7 @@ namespace FTB_Quests
         private void BatchUpdateDatabase(Dictionary<string, List<string>> itemIdToQuestMap, Dictionary<string, List<string>> uidToQuestMap, SQLiteConnection connection, SQLiteTransaction transaction)
         {
             var batchUpdateStartTime = DateTime.Now;
-            const int batchSize = 50;       
+            const int batchSize = 50;
             var commandText = new StringBuilder();
             var parameters = new List<SQLiteParameter>();
 
@@ -281,6 +286,7 @@ namespace FTB_Quests
 
         public void CheckItemInDatabase()
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             string[] itemNameLines = form.RecipeTextDetails.Lines;
 
             bool itemExists = false;

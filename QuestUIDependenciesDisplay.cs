@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace FTB_Quests
@@ -12,11 +11,10 @@ namespace FTB_Quests
     {
         private Dictionary<string, Dictionary<string, List<string>>> dependencies = new Dictionary<string, Dictionary<string, List<string>>>();
 
-
         public void InitializeDependencies()
         {
             LoadDependenciesForSelectedIndex();
-            
+
         }
 
         private void LoadDependenciesForSelectedIndex()
@@ -50,6 +48,8 @@ namespace FTB_Quests
 
         private void LoadAndStoreDependencies(string snbtFile)
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
@@ -149,8 +149,8 @@ namespace FTB_Quests
 
         private void SaveDependenciesGraphToFile()
         {
-            string cacheFolderPath = Path.Combine(Environment.CurrentDirectory, "Cache", Path.GetFileName(ConfigManager.Config.ProjectFolder));
-            Directory.CreateDirectory(cacheFolderPath);      
+            string cacheFolderPath = Path.Combine(Environment.CurrentDirectory, "Cache", Path.GetFileName(configManager.Config.ProjectFolder));
+            Directory.CreateDirectory(cacheFolderPath);
             string filePath = Path.Combine(cacheFolderPath, "dependencies_graph.txt");
 
             using (StreamWriter writer = new StreamWriter(filePath))
@@ -182,9 +182,9 @@ namespace FTB_Quests
 
             foreach (var dependent in dependencies[snbtFile][ingredient])
             {
-                writer.Write(new string(' ', level * 2));     
+                writer.Write(new string(' ', level * 2));
                 writer.WriteLine($"|-- {dependent}");
-                WriteDependenciesToFile(writer, snbtFile, dependent, level + 1, visited);      
+                WriteDependenciesToFile(writer, snbtFile, dependent, level + 1, visited);
             }
         }
 

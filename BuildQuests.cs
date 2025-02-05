@@ -7,12 +7,14 @@ namespace FTB_Quests
 {
     public partial class BuildQuests : Form
     {
-        public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
+        ConfigManager configManager;
+        
         QuestBuilder questBuilder;
         QuestTreeViewManager questTreeViewManager;
 
         public BuildQuests()
         {
+            configManager = ConfigManager.Instance;
             InitializeComponent();
             InitializeTreeViewManager();
             InitializeQuestBuilder();
@@ -27,7 +29,7 @@ namespace FTB_Quests
         {
             questTreeViewManager = new QuestTreeViewManager(treeView1);
             questTreeViewManager.InitializeTreeView(SelectedIndexClick);
-            questTreeViewManager.LoadFileTree(ConfigManager.Config.QuestFolder);
+            questTreeViewManager.LoadFileTree(configManager.Config.QuestFolder);
         }
 
         private void SaveAllQuests_Click(object sender, EventArgs e)
@@ -38,7 +40,7 @@ namespace FTB_Quests
                 bool includeDependencies = true;
                 questBuilder.OutputQuestRecipeAndDependencies(node.Text.ToString(), includeDependencies);
                 Application.DoEvents();
-                string filePath = questBuilder.FindFileInSubfolders(ConfigManager.Config.QuestFolder, node.Text.ToString());
+                string filePath = questBuilder.FindFileInSubfolders(configManager.Config.QuestFolder, node.Text.ToString());
 
                 try
                 {
@@ -75,7 +77,7 @@ namespace FTB_Quests
             await questTreeViewManager.FilterNodesAsync(treeView1.Nodes, async node =>
             {
                 await questBuilder.PopulateQuestBoxRemoveDependenciesAsync(node.Text);
-                string filePath = questBuilder.FindFileInSubfolders(ConfigManager.Config.QuestFolder, node.Text.ToString());
+                string filePath = questBuilder.FindFileInSubfolders(configManager.Config.QuestFolder, node.Text.ToString());
 
                 try
                 {

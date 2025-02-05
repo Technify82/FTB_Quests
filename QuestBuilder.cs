@@ -12,24 +12,26 @@ namespace FTB_Quests
     public class QuestBuilder
     {
         private readonly BuildQuests buildQuests;
-        public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
-        private readonly string questFolderPath = ConfigManager.Config.QuestFolder.ToString();
+        ConfigManager configManager;
+        //public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
+        //private readonly string questFolderPath = ConfigManager.Config.QuestFolder.ToString();
 
         public QuestBuilder(BuildQuests buildQuests)
         {
             this.buildQuests = buildQuests;
+            configManager = ConfigManager.Instance;
         }
 
         public void PopulateQuestBox(string filename)
         {
             buildQuests.QuestBox.Clear();
-            string questFolderPath = ConfigManager.Config.QuestFolder.ToString();
+            string questFolderPath = configManager.Config.QuestFolder.ToString();
 
             string[] files = Directory.GetFiles(questFolderPath, filename, SearchOption.AllDirectories);
 
             if (files.Length == 0)
             {
-                Console.WriteLine($"File not found: {filename}");
+                //Console.WriteLine($"File not found: {filename}");
                 return;
             }
 
@@ -47,20 +49,20 @@ namespace FTB_Quests
             }
             else
             {
-                Console.WriteLine($"Selected file does not exist: {selectedFilePath}");
+                //Console.WriteLine($"Selected file does not exist: {selectedFilePath}");
             }
         }
 
         public async Task PopulateQuestBoxRemoveDependenciesAsync(string filename)
         {
             buildQuests.QuestBox.Clear();
-            string questFolderPath = ConfigManager.Config.QuestFolder.ToString();
+            string questFolderPath = configManager.Config.QuestFolder.ToString();
 
             string[] files = Directory.GetFiles(questFolderPath, filename, SearchOption.AllDirectories);
 
             if (files.Length == 0)
             {
-                Console.WriteLine($"File not found: {filename}");
+               // Console.WriteLine($"File not found: {filename}");
                 return;
             }
 
@@ -102,7 +104,7 @@ namespace FTB_Quests
             }
             else
             {
-                Console.WriteLine($"Selected file does not exist: {selectedFilePath}");
+                //Console.WriteLine($"Selected file does not exist: {selectedFilePath}");
             }
         }
 
@@ -111,6 +113,7 @@ namespace FTB_Quests
 
         public void OutputQuestRecipeAndDependencies(string questName, bool includeDependencies)
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
@@ -156,7 +159,7 @@ namespace FTB_Quests
                         }
                         else
                         {
-                            Console.WriteLine("No matching recipes found.");
+                            //Console.WriteLine("No matching recipes found.");
                         }
                     }
                 }
@@ -165,6 +168,7 @@ namespace FTB_Quests
 
         private void ProcessIngredientForDependencies(string ingredient, List<Tuple<string, string>> uidList)
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
@@ -199,7 +203,7 @@ namespace FTB_Quests
                         }
                         else
                         {
-                            Console.WriteLine($"No matching quests found for ingredient: {ingredient}");
+                           // Console.WriteLine($"No matching quests found for ingredient: {ingredient}");
                             Application.DoEvents();
                         }
                     }
@@ -216,7 +220,7 @@ namespace FTB_Quests
 
         public void SaveQuestBoxContent()
         {
-            string filePath = FindFileInSubfolders(questFolderPath, buildQuests.treeView1.SelectedNode.Text.ToString());
+            string filePath = FindFileInSubfolders(configManager.Config.QuestFolder, buildQuests.treeView1.SelectedNode.Text.ToString());
 
             try
             {
@@ -278,7 +282,7 @@ namespace FTB_Quests
                         if (lines[counter].Contains("dependencies:") && !lines[counter].Contains("min_required_dependencies"))
                         {
                             insideDependencies = true;
-                            Console.WriteLine("Entering dependencies group.");
+                            //Console.WriteLine("Entering dependencies group.");
 
                             while (insideDependencies)
                             {
@@ -415,7 +419,7 @@ namespace FTB_Quests
                     }
                     else
                     {
-                        Console.WriteLine("No Matching Quest Found.");
+                        //Console.WriteLine("No Matching Quest Found.");
                     }
                 }
             }

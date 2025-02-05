@@ -65,6 +65,12 @@
     <Compile Include="Configuration.Designer.cs">
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConfigurationLogic.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfigurationSaveandLoad.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DatabaseIO.cs" />
     <Compile Include="DataDisplay.cs">
       <SubType>Form</SubType>

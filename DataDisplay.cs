@@ -7,15 +7,17 @@ namespace FTB_Quests
 {
     public partial class DataDisplay : Form
     {
-        public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
+        ConfigManager configManager;
         public DataDisplay()
         {
+            configManager = ConfigManager.Instance;
             InitializeComponent();
             textBox1.TextChanged += TextBox1_TextChanged;
         }
 
         public void DataDisplay_Load()
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             var dataTable = new DataTable();
             string query = "SELECT * FROM Recipes";
 
@@ -36,6 +38,7 @@ namespace FTB_Quests
 
         private void TextBox1_TextChanged(object sender, EventArgs e)
         {
+            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             string filterText = textBox1.Text.ToLower();
             var dataTable = new DataTable();
             string query = "SELECT * FROM Recipes WHERE " +

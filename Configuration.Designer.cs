@@ -46,10 +46,9 @@
             this.DatabaseFileButton = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.General = new System.Windows.Forms.TabPage();
-            this.SwitchPathsButton = new System.Windows.Forms.Button();
-            this.CacheButton = new System.Windows.Forms.Button();
             this.Cache = new System.Windows.Forms.TabPage();
             this.CacheInfoBox = new System.Windows.Forms.RichTextBox();
+            this.UseCache = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.General.SuspendLayout();
             this.Cache.SuspendLayout();
@@ -190,12 +189,11 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(660, 537);
             this.tabControl1.TabIndex = 21;
-            this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
+            //this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
             // General
             // 
-            this.General.Controls.Add(this.SwitchPathsButton);
-            this.General.Controls.Add(this.CacheButton);
+            this.General.Controls.Add(this.UseCache);
             this.General.Controls.Add(this.projectFolder);
             this.General.Controls.Add(this.DatabaseFileButton);
             this.General.Controls.Add(this.findRecipeFile);
@@ -218,24 +216,6 @@
             this.General.Text = "General";
             this.General.UseVisualStyleBackColor = true;
             // 
-            // SwitchPathsButton
-            // 
-            this.SwitchPathsButton.Location = new System.Drawing.Point(194, 238);
-            this.SwitchPathsButton.Name = "SwitchPathsButton";
-            this.SwitchPathsButton.Size = new System.Drawing.Size(150, 50);
-            this.SwitchPathsButton.TabIndex = 22;
-            this.SwitchPathsButton.Text = "Switch Paths";
-            this.SwitchPathsButton.UseVisualStyleBackColor = true;
-            // 
-            // CacheButton
-            // 
-            this.CacheButton.Location = new System.Drawing.Point(38, 238);
-            this.CacheButton.Name = "CacheButton";
-            this.CacheButton.Size = new System.Drawing.Size(150, 50);
-            this.CacheButton.TabIndex = 21;
-            this.CacheButton.Text = "Cache";
-            this.CacheButton.UseVisualStyleBackColor = true;
-            // 
             // Cache
             // 
             this.Cache.Controls.Add(this.CacheInfoBox);
@@ -255,10 +235,23 @@
             this.CacheInfoBox.TabIndex = 0;
             this.CacheInfoBox.Text = "";
             // 
+            // UseCache
+            // 
+            this.UseCache.AutoSize = true;
+            this.UseCache.Location = new System.Drawing.Point(6, 198);
+            this.UseCache.Name = "UseCache";
+            this.UseCache.Size = new System.Drawing.Size(112, 17);
+            this.UseCache.TabIndex = 21;
+            this.UseCache.Text = "Work From Cache";
+            this.UseCache.UseVisualStyleBackColor = true;
+            this.UseCache.CheckedChanged += new System.EventHandler(this.UseCache_CheckedChanged);
+            // 
             // Configuration
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(684, 561);
             this.Controls.Add(this.tabControl1);
             this.Name = "Configuration";
@@ -293,7 +286,6 @@
         private System.Windows.Forms.TabPage General;
         private System.Windows.Forms.TabPage Cache;
         private System.Windows.Forms.RichTextBox CacheInfoBox;
-        private System.Windows.Forms.Button SwitchPathsButton;
-        private System.Windows.Forms.Button CacheButton;
+        private System.Windows.Forms.CheckBox UseCache;
     }
 }
