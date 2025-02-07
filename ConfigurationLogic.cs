@@ -7,25 +7,6 @@ namespace FTB_Quests
 {
     public partial class Configuration
     {
-        
-        private void Configuration_Load(object sender, EventArgs e)
-        {
-            LoadConfiguration();
-            PopulateTextBoxes();
-
-            if (string.IsNullOrEmpty(config.ProjectFolder) || !Directory.Exists(config.ProjectFolder))
-            {
-                MessageBox.Show("Please set a valid project folder before proceeding.", "Project Folder Missing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                projectFolder.PerformClick();
-            }
-            else
-            {
-                UpdateTextBoxes(config.ProjectFolder);
-                UseCache.Checked = config.UseCache;
-            }
-        }
-
-
 
         private void EnableControls()
         {
@@ -34,7 +15,6 @@ namespace FTB_Quests
                 ctrl.Enabled = true;
             }
         }
-
 
         public string GetMostRecentFile(string folderPath, string searchPattern)
         {
@@ -96,14 +76,6 @@ namespace FTB_Quests
                 }
             }
             return false;
-        }
-
-        public void UpdateConfiguration()
-        {
-            SaveConfig(); // Save current settings
-            PopulateTextBoxes(); // Reflect changes in the UI
-            InitializeCache(config, CacheInfoBox, configManager); // Reinitialize cache if needed
-            //RefreshComponents(); // Recreate or refresh components
         }
     }
 }

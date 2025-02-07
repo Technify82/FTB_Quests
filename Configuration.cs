@@ -15,8 +15,7 @@ namespace FTB_Quests
             InitializeComponent();
             this.mainForm = mainForm;
             configManager = ConfigManager.Instance;
-            LoadConfiguration();
-            Load += Configuration_Load;
+            LoadAndInitializeConfiguration();
             InitializeCache(config, CacheInfoBox, configManager);
         }
 
@@ -28,131 +27,77 @@ namespace FTB_Quests
 
         private void ProjectFolder_Click(object sender, EventArgs e)
         {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
-            {
-                folderBrowserDialog.Description = "Select a project folder";
-                folderBrowserDialog.ShowNewFolderButton = true;
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    projectFolderTextBox.Text = folderBrowserDialog.SelectedPath;
-                    config.ProjectFolder = folderBrowserDialog.SelectedPath;
-
-                    UpdateTextBoxes(config.ProjectFolder);
-                    SaveConfig();
-                    EnableControls();
-                }
-            }
+            string method = "ProjectFolder";
+            FolderSelect(method);
+            SaveConfig(method);
         }
 
         public void RecipeFile_Click(object sender, EventArgs e)
         {
-            using (var openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Title = "Select a recipe file";
-                openFileDialog.Filter = "CSV files (*.csv)|*.csv";
-                openFileDialog.DefaultExt = "csv";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    recipeFileTextBox.Text = openFileDialog.FileName;
-                }
-                UpdateConfiguration();
-            }
+            string method = "RecipeFile";
+            FileSelect(method);
+            SaveConfig(method);
         }
 
         public void ItemPanelFile_Click(object sender, EventArgs e)
         {
-            using (var openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Title = "Select an item panel file";
-                openFileDialog.Filter = "CSV files (*.csv)|*.csv";
-                openFileDialog.DefaultExt = "csv";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    itemPanelFileTextBox.Text = openFileDialog.FileName;
-                }
-                UpdateConfiguration();
-            }
+            string method = "ItemPanel";
+            FileSelect(method);
+            SaveConfig(method);
         }
 
         public void ItemImagesFolder_Click(object sender, EventArgs e)
         {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
-            {
-                folderBrowserDialog.Description = "Select a folder containing recipe images.";
-                folderBrowserDialog.ShowNewFolderButton = true;
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    imageFolderTextBox.Text = folderBrowserDialog.SelectedPath;
-                }
-                UpdateConfiguration();
-            }
+
+            string method = "ImageFolder";
+            FolderSelect(method);
+            SaveConfig(method);
         }
 
         public void FindQuestFolder_Click(object sender, EventArgs e)
         {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
-            {
-                folderBrowserDialog.Description = "Select a folder containing quests";
-                folderBrowserDialog.ShowNewFolderButton = true;
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    QuestFolderLocation.Text = folderBrowserDialog.SelectedPath;
-                }
-                UpdateConfiguration();
-            }
+            string method = "QuestFolder";
+            FolderSelect(method);
+            SaveConfig(method);
         }
 
         private void OreDictButton_Click(object sender, EventArgs e)
         {
-            using (var openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Title = "Select an Ore Dictionary file";
-                openFileDialog.Filter = "TXT files (*.txt)|*.txt";
-                openFileDialog.DefaultExt = "txt";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    OreDictFileLocation.Text = openFileDialog.FileName;
-                }
-                UpdateConfiguration();
-            }
+            string method = "OreDictFile";
+            FileSelect(method);
+            SaveConfig(method);
         }
 
         private void DatabaseFile_Click(object sender, EventArgs e)
         {
-            using (var openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Title = "Select an SQL Database";
-                openFileDialog.Filter = "DB files (*.db)|*.db";
-                openFileDialog.DefaultExt = "db";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    config.DatabaseFile = openFileDialog.FileName;
-                    DatabaseFile.Text = openFileDialog.FileName;
-                }
-                UpdateConfiguration();
-            }
+            string method = "DatabaseFile";
+            FileSelect(method);
+            SaveConfig(method);
         }
 
         private void UseCache_CheckedChanged(object sender, EventArgs e)
         {
-            if (UseCache.Checked)
-            {
-                string baseCacheDir = Path.Combine(Environment.CurrentDirectory, "Cache", Path.GetFileName(config.ProjectFolder));
-                CachingSystem.EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
+            //string method = "UseCache";
 
-                CacheInfoBox.AppendText("Copying config locations to cache...\n");
-                CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox, configManager);
-            }
-            else
-            {
-                CacheInfoBox.AppendText("Cache is turned off.\n");
-            }
+            //if (UseCache.Checked)
+            //{
+            //    string baseCacheDir = Path.Combine(Environment.CurrentDirectory, "Cache", Path.GetFileName(config.ProjectFolder));
+            //    CachingSystem.EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
 
-            configManager.Config.UseCache = UseCache.Checked;
-            UpdateConfiguration();
+            //    CacheInfoBox.AppendText("Copying config locations to cache...\n");
+            //    CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox, configManager);
+
+            //    // Call helper method to update text boxes and config
+            //    UpdateTextBoxesAndConfigForCache(baseCacheDir);
+            //}
+            //else
+            //{
+            //    CacheInfoBox.AppendText("Cache is turned off.\n");
+            //}
+
+            //configManager.Config.UseCache = UseCache.Checked;
+            //SaveConfig(method); // Save configuration after updates
         }
-
-
-
     }
 }
+

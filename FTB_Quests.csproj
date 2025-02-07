@@ -65,6 +65,9 @@
     <Compile Include="Configuration.Designer.cs">
       <DependentUpon>Configuration.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConfigurationFileFolderSelectLogic.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ConfigurationLogic.cs">
       <SubType>Form</SubType>
     </Compile>

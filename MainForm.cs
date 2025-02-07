@@ -6,7 +6,7 @@ namespace FTB_Quests
     public partial class MainForm : Form
     {
         ConfigManager configManager;
-                private readonly Configuration configuration;
+        private readonly Configuration configuration;
         private QuestLinker questLinker;
         private NewParser newParser;
         private DataDisplay dataDisplay;
@@ -21,13 +21,12 @@ namespace FTB_Quests
             Show();
             configuration = new Configuration(this);
             configManager = ConfigManager.Instance;
-
-            configuration.LoadConfiguration();
-            configuration.PopulateTextBoxes();
+            configuration.LoadAndInitializeConfiguration();
+            //configuration.PopulateTextBoxes();
             InitializeComponents();
         }
 
-        
+
         private bool componentsInitialized = false;
 
         private void InitializeComponents()
@@ -62,17 +61,17 @@ namespace FTB_Quests
         public void UpdateConfiguration()
 
         {
-            
-            configuration.LoadConfiguration();    
- 
-            questLinker = new QuestLinker(this);     
+
+            configuration.LoadAndInitializeConfiguration();
+
+            questLinker = new QuestLinker(this);
             newParser = new NewParser(this);
             newParser.CheckDatabaseAndPopulateRecipeText();
             oreDictLogic = new OreDictLogic(this);
             populateRecipeGrid = new PopulateRecipeGrid(this);
             buildQuests = new BuildQuests();
             questUI = new QuestUI();
-            dataDisplay.DataDisplay_Load();     
+            dataDisplay.DataDisplay_Load();
         }
 
 
