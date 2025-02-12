@@ -46,9 +46,11 @@
             this.DatabaseFileButton = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.General = new System.Windows.Forms.TabPage();
+            this.UseCache = new System.Windows.Forms.CheckBox();
             this.Cache = new System.Windows.Forms.TabPage();
             this.CacheInfoBox = new System.Windows.Forms.RichTextBox();
-            this.UseCache = new System.Windows.Forms.CheckBox();
+            this.SourceLocation = new System.Windows.Forms.TextBox();
+            this.ProjectSource = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.General.SuspendLayout();
             this.Cache.SuspendLayout();
@@ -187,12 +189,13 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(660, 537);
+            this.tabControl1.Size = new System.Drawing.Size(660, 318);
             this.tabControl1.TabIndex = 21;
-            //this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
             // General
             // 
+            this.General.Controls.Add(this.ProjectSource);
+            this.General.Controls.Add(this.SourceLocation);
             this.General.Controls.Add(this.UseCache);
             this.General.Controls.Add(this.projectFolder);
             this.General.Controls.Add(this.DatabaseFileButton);
@@ -211,10 +214,21 @@
             this.General.Location = new System.Drawing.Point(4, 22);
             this.General.Name = "General";
             this.General.Padding = new System.Windows.Forms.Padding(3);
-            this.General.Size = new System.Drawing.Size(652, 511);
+            this.General.Size = new System.Drawing.Size(652, 292);
             this.General.TabIndex = 0;
             this.General.Text = "General";
             this.General.UseVisualStyleBackColor = true;
+            // 
+            // UseCache
+            // 
+            this.UseCache.AutoSize = true;
+            this.UseCache.Location = new System.Drawing.Point(6, 236);
+            this.UseCache.Name = "UseCache";
+            this.UseCache.Size = new System.Drawing.Size(112, 17);
+            this.UseCache.TabIndex = 21;
+            this.UseCache.Text = "Work From Cache";
+            this.UseCache.UseVisualStyleBackColor = true;
+            this.UseCache.CheckedChanged += new System.EventHandler(this.UseCache_CheckedChanged);
             // 
             // Cache
             // 
@@ -222,7 +236,7 @@
             this.Cache.Location = new System.Drawing.Point(4, 22);
             this.Cache.Name = "Cache";
             this.Cache.Padding = new System.Windows.Forms.Padding(3);
-            this.Cache.Size = new System.Drawing.Size(652, 511);
+            this.Cache.Size = new System.Drawing.Size(652, 241);
             this.Cache.TabIndex = 1;
             this.Cache.Text = "Cache";
             this.Cache.UseVisualStyleBackColor = true;
@@ -235,16 +249,21 @@
             this.CacheInfoBox.TabIndex = 0;
             this.CacheInfoBox.Text = "";
             // 
-            // UseCache
+            // SourceLocation
             // 
-            this.UseCache.AutoSize = true;
-            this.UseCache.Location = new System.Drawing.Point(6, 198);
-            this.UseCache.Name = "UseCache";
-            this.UseCache.Size = new System.Drawing.Size(112, 17);
-            this.UseCache.TabIndex = 21;
-            this.UseCache.Text = "Work From Cache";
-            this.UseCache.UseVisualStyleBackColor = true;
-            this.UseCache.CheckedChanged += new System.EventHandler(this.UseCache_CheckedChanged);
+            this.SourceLocation.Location = new System.Drawing.Point(126, 189);
+            this.SourceLocation.Name = "SourceLocation";
+            this.SourceLocation.Size = new System.Drawing.Size(500, 20);
+            this.SourceLocation.TabIndex = 22;
+            // 
+            // ProjectSource
+            // 
+            this.ProjectSource.Location = new System.Drawing.Point(7, 189);
+            this.ProjectSource.Name = "ProjectSource";
+            this.ProjectSource.Size = new System.Drawing.Size(117, 23);
+            this.ProjectSource.TabIndex = 23;
+            this.ProjectSource.Text = "Source Location";
+            this.ProjectSource.UseVisualStyleBackColor = true;
             // 
             // Configuration
             // 
@@ -287,5 +306,7 @@
         private System.Windows.Forms.TabPage Cache;
         private System.Windows.Forms.RichTextBox CacheInfoBox;
         private System.Windows.Forms.CheckBox UseCache;
+        private System.Windows.Forms.Button ProjectSource;
+        private System.Windows.Forms.TextBox SourceLocation;
     }
 }

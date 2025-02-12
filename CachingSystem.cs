@@ -11,10 +11,18 @@ namespace FTB_Quests
         {
             string baseCacheDir = Path.Combine(Environment.CurrentDirectory, "Cache", Path.GetFileName(config.ProjectFolder));
             EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
-            DirectoryInfo cacheDirInfo = new DirectoryInfo(baseCacheDir);
-            CopyDirectory(new DirectoryInfo(File.Exists(configManager.Config.RecipeFile) ? Path.GetDirectoryName(configManager.Config.RecipeFile) : configManager.Config.RecipeFile), new DirectoryInfo(Path.Combine(baseCacheDir, "pmdumper")), CacheInfoBox);
-            CopyDirectory(new DirectoryInfo(File.Exists(configManager.Config.ItemPanelFile) ? Path.GetDirectoryName(configManager.Config.ItemPanelFile) : configManager.Config.ItemPanelFile), new DirectoryInfo(Path.Combine(baseCacheDir, "dumps")), CacheInfoBox);
-        }
+            CopyDirectory(
+                new DirectoryInfo(File.Exists(configManager.Config.RecipeFile) ? Path.GetDirectoryName(configManager.Config.RecipeFile) : configManager.Config.RecipeFile),
+                new DirectoryInfo(Path.Combine(baseCacheDir, "pmdumper")), CacheInfoBox);
+            CopyDirectory(
+                new DirectoryInfo(File.Exists(configManager.Config.ItemPanelFile) ? Path.GetDirectoryName(configManager.Config.ItemPanelFile) : configManager.Config.ItemPanelFile),
+                new DirectoryInfo(Path.Combine(baseCacheDir, "dumps")), CacheInfoBox);
+
+            CopyDirectory(
+                new DirectoryInfo(Path.Combine(configManager.Config.SourceLocation + "\\config\\ftbquests\\normal\\chapters\\")),
+                new DirectoryInfo(configManager.Config.QuestFolder),
+                CacheInfoBox);
+                    }
 
         private static void CopyDirectory(DirectoryInfo source, DirectoryInfo destination, RichTextBox CacheInfoBox)
         {

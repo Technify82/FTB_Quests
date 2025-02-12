@@ -61,9 +61,7 @@ namespace FTB_Quests
         public void UpdateConfiguration()
 
         {
-
-            configuration.LoadAndInitializeConfiguration();
-
+            //configuration.LoadAndInitializeConfiguration();
             questLinker = new QuestLinker(this);
             newParser = new NewParser(this);
             newParser.CheckDatabaseAndPopulateRecipeText();
@@ -96,6 +94,7 @@ namespace FTB_Quests
             }
             dataDisplay.DataDisplay_Load();
             dataDisplay.Show();
+            //Hide();
         }
 
         private void ParseRecipeFileToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -124,6 +123,7 @@ namespace FTB_Quests
         {
             Configuration configForm = new Configuration(this);
             configForm.Show();
+         //   Hide();
         }
 
         private void ExitToolStrip_Click(object sender, EventArgs e) => Close();
@@ -146,6 +146,7 @@ namespace FTB_Quests
             }
 
             buildQuests.Show();
+           // Hide() ;
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -156,6 +157,7 @@ namespace FTB_Quests
             }
 
             questUI.Show();
+
         }
     }
 }

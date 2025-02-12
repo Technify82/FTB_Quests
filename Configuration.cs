@@ -77,26 +77,31 @@ namespace FTB_Quests
 
         private void UseCache_CheckedChanged(object sender, EventArgs e)
         {
-            //string method = "UseCache";
+            string method = "UseCache";
 
-            //if (UseCache.Checked)
-            //{
-            //    string baseCacheDir = Path.Combine(Environment.CurrentDirectory, "Cache", Path.GetFileName(config.ProjectFolder));
-            //    CachingSystem.EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
+            if (UseCache.Checked)
+            {
+                string baseCacheDir = Path.Combine(Environment.CurrentDirectory, "Cache", Path.GetFileName(config.ProjectFolder));
+                CachingSystem.EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
 
-            //    CacheInfoBox.AppendText("Copying config locations to cache...\n");
-            //    CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox, configManager);
+                CacheInfoBox.AppendText("Copying config locations to cache...\n");
+                CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox, configManager);
 
-            //    // Call helper method to update text boxes and config
-            //    UpdateTextBoxesAndConfigForCache(baseCacheDir);
-            //}
-            //else
-            //{
-            //    CacheInfoBox.AppendText("Cache is turned off.\n");
-            //}
+                // Call helper method to update text boxes and config
+                UpdateTextBoxesAndConfigForCache(baseCacheDir);
+            }
+            else
+            {
+                CacheInfoBox.AppendText("Cache is turned off.\n");
+            }
 
-            //configManager.Config.UseCache = UseCache.Checked;
-            //SaveConfig(method); // Save configuration after updates
+            configManager.Config.UseCache = UseCache.Checked;
+            SaveConfig(method); // Save configuration after updates
+        }
+
+        private void PrintCurrentCache_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

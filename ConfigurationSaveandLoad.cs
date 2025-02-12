@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FTB_Quests
@@ -38,7 +34,7 @@ namespace FTB_Quests
                 }
                 else
                 {
-                    UseCache.Checked = config.UseCache; // Set UseCache checkbox state
+                    UseCache.Checked = config.UseCache;
                 }
             }
 
@@ -48,12 +44,14 @@ namespace FTB_Quests
         public void PopulateTextBoxes()
         {
             projectFolderTextBox.Text = config.ProjectFolder;
+            SourceLocation.Text = config.SourceLocation;
             recipeFileTextBox.Text = config.RecipeFile;
             itemPanelFileTextBox.Text = config.ItemPanelFile;
             imageFolderTextBox.Text = config.ImageFolder;
             QuestFolderLocation.Text = config.QuestFolder;
             OreDictFileLocation.Text = config.OreDictionary;
             DatabaseFile.Text = config.DatabaseFile;
+            UseCache.Checked = config.UseCache;
         }
 
         public void SaveConfig(string caller)
@@ -84,7 +82,6 @@ namespace FTB_Quests
                 case "UseCache":
                     config.UseCache = UseCache.Checked;
                     break;
-                    // Add cases for other properties as needed
             }
 
             string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
@@ -94,17 +91,19 @@ namespace FTB_Quests
         private void UpdateTextBoxesAndConfigForCache(string baseCacheDir)
         {
             // Update text boxes to reflect cache folder
+            SourceLocation.Text = configManager.Config.ProjectFolder;
+            config.SourceLocation = SourceLocation.Text;
             projectFolderTextBox.Text = baseCacheDir;
             UpdateTextBoxes(baseCacheDir);
 
             // Update config to reflect cache folder
+            config.SourceLocation = config.ProjectFolder;
             config.ProjectFolder = baseCacheDir;
-            config.RecipeFile = Path.Combine(baseCacheDir, Path.GetFileName(config.RecipeFile));
-            config.ItemPanelFile = Path.Combine(baseCacheDir, Path.GetFileName(config.ItemPanelFile));
-            config.ImageFolder = Path.Combine(baseCacheDir, Path.GetFileName(config.ImageFolder));
-            config.QuestFolder = Path.Combine(baseCacheDir, Path.GetFileName(config.QuestFolder));
-            config.OreDictionary = Path.Combine(baseCacheDir, Path.GetFileName(config.OreDictionary));
-           // config.DatabaseFile = Path.Combine(baseCacheDir, Path.GetFileName(config.DatabaseFile));
+            config.RecipeFile = Path.Combine(baseCacheDir, "pmdumper\\", Path.GetFileName(config.RecipeFile));
+            config.ItemPanelFile = Path.Combine(baseCacheDir, "dumps\\", Path.GetFileName(config.ItemPanelFile));
+            config.ImageFolder = Path.Combine(baseCacheDir, "dumps\\", Path.GetFileName(config.ImageFolder));
+            config.QuestFolder = Path.Combine(baseCacheDir, "config\\ftbquests\\normal\\chapters\\", Path.GetFileName(config.QuestFolder));
+            config.OreDictionary = Path.Combine(baseCacheDir, "dumps\\", Path.GetFileName(config.OreDictionary));
         }
 
         public void UpdateTextBoxes(string projectFolderPath)
@@ -128,7 +127,8 @@ namespace FTB_Quests
             OreDictFileLocation.Text = Path.Combine(projectFolderPath, "dumps\\itemdump.txt");
             config.OreDictionary = OreDictFileLocation.Text;
             DatabaseFile.Text = config.DatabaseFile;
-        }
+            UseCache.Checked = config.UseCache;
 
+        }
     }
 }

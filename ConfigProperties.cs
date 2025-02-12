@@ -13,6 +13,8 @@ namespace FTB_Quests
         public string QuestFolder { get; set; }
         public string OreDictionary { get; set; }
         public string DatabaseFile { get; set; }
+        public string SourceLocation { get; set; }
         public bool UseCache { get; set; }
+
     }
 }

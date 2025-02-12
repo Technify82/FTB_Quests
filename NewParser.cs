@@ -32,10 +32,7 @@ namespace FTB_Quests
     {
         private readonly MainForm form;
         ConfigManager configManager;
-        // readonly string itempanelfile = ConfigManager.Config.ItemPanelFile;
-        // public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
         readonly DatabaseIO databaseIO;
-        private readonly List<RecipeData> parsedRecipes = new List<RecipeData>();
         public NewParser(MainForm form)
         {
             this.form = form;
@@ -464,6 +461,10 @@ namespace FTB_Quests
         public void ParseRecipeFile()
         {
             string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+            var recipeFilePath = configManager.Config.RecipeFile;
+            var recipeGroups = ParseRecipeGroups(recipeFilePath);
+            string itemPanelFilePath = configManager.Config.ItemPanelFile;
+            var oreDictFilePath = configManager.Config.OreDictionary;
 
             try
             {
@@ -499,19 +500,20 @@ namespace FTB_Quests
             form.toolStripProgressBar2.Value = 0;
             form.toolStripProgressBar2.Maximum = 9;
 
-            var recipeFilePath = configManager.Config.RecipeFile;
+
+
             if (string.IsNullOrWhiteSpace(recipeFilePath))
             {
                 MessageBox.Show("The recipe file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var recipeGroups = ParseRecipeGroups(recipeFilePath);
+
             form.toolStripProgressBar2.Value++;
             form.toolStripStatusLabel1.Text = "Loading Items";
             Application.DoEvents();
 
-            string itemPanelFilePath = configManager.Config.ItemPanelFile;
+
             if (string.IsNullOrWhiteSpace(itemPanelFilePath))
             {
                 MessageBox.Show("The item panel file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -522,7 +524,7 @@ namespace FTB_Quests
             form.toolStripStatusLabel1.Text = "Compiling Ore Dictionary";
             Application.DoEvents();
 
-            var oreDictFilePath = configManager.Config.OreDictionary;
+            
             if (string.IsNullOrWhiteSpace(oreDictFilePath))
             {
                 MessageBox.Show("The ore dictionary file path is empty or null.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
