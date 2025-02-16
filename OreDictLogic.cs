@@ -17,7 +17,7 @@ namespace FTB_Quests
         {
             configManager = ConfigManager.Instance;
             
-           //this.connectionString = connectionString;
+           
             this.form = form;
         }
 
