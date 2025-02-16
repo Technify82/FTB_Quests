@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SQLite;
+using System.Text;
 using System.Windows.Forms;
 
 namespace FTB_Quests
@@ -8,6 +9,7 @@ namespace FTB_Quests
     public partial class DataDisplay : Form
     {
         ConfigManager configManager;
+
         public DataDisplay()
         {
             configManager = ConfigManager.Instance;
@@ -18,8 +20,22 @@ namespace FTB_Quests
         public void DataDisplay_Load()
         {
             string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
+            var tableGridViewPairs = new (string TableName, DataGridView GridView)[]
+            {
+                ("Recipes", RecipeDataGridView1),
+                ("Potions", PotionDataGridView1)
+            };
+
+            foreach (var (TableName, GridView) in tableGridViewPairs)
+            {
+                LoadTable(connectionString, TableName, GridView);
+            }
+        }
+
+        private void LoadTable(string connectionString, string tableName, DataGridView gridView)
+        {
             var dataTable = new DataTable();
-            string query = "SELECT * FROM Recipes";
+            string query = $"SELECT * FROM {tableName}";
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
@@ -33,49 +49,67 @@ namespace FTB_Quests
                 }
                 connection.Close();
             }
-            RecipeDataGridView1.DataSource = dataTable;
+            gridView.DataSource = dataTable;
         }
 
         private void TextBox1_TextChanged(object sender, EventArgs e)
         {
             string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
             string filterText = textBox1.Text.ToLower();
+            var tableGridViewPairs = new (string TableName, DataGridView GridView)[]
+            {
+                ("Recipes", RecipeDataGridView1),
+                ("Potions", PotionDataGridView1)
+                // Add more pairs as needed
+            };
+
+            foreach (var (TableName, GridView) in tableGridViewPairs)
+            {
+                FilterTable(connectionString, TableName, filterText, GridView);
+            }
+        }
+
+        private void FilterTable(string connectionString, string tableName, string filterText, DataGridView dataGridView)
+        {
             var dataTable = new DataTable();
-            string query = "SELECT * FROM Recipes WHERE " +
-                "LOWER(InputPattern) LIKE @FilterText OR " +
-                "LOWER(A) LIKE @FilterText OR " +
-                "LOWER(B) LIKE @FilterText OR " +
-                "LOWER(C) LIKE @FilterText OR " +
-                "LOWER(D) LIKE @FilterText OR " +
-                "LOWER(E) LIKE @FilterText OR " +
-                "LOWER(F) LIKE @FilterText OR " +
-                "LOWER(G) LIKE @FilterText OR " +
-                "LOWER(H) LIKE @FilterText OR " +
-                "LOWER(I) LIKE @FilterText OR " +
-                "LOWER(OutputItem) LIKE @FilterText OR " +
-                "LOWER(ItemName) LIKE @FilterText OR " +
-                "LOWER(ItemId) LIKE @FilterText OR " +
-                "LOWER(ItemMeta) LIKE @FilterText OR " +
-                "LOWER(DisplayName) LIKE @FilterText OR " +
-                "LOWER(OreDict) LIKE @FilterText OR " +
-                "LOWER(Quests) LIKE @FilterText OR " +
-                "LOWER(TaskUID) LIKE @FilterText";
+            string columnsQuery = $"PRAGMA table_info({tableName});";  // SQLite specific; adjust for other DBMS
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
-                using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                using (SQLiteCommand command = new SQLiteCommand(columnsQuery, connection))
                 {
-                    command.Parameters.AddWithValue("@FilterText", "%" + filterText + "%");
-
-                    using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
+                    using (SQLiteDataReader reader = command.ExecuteReader())
                     {
-                        adapter.Fill(dataTable);
+                        StringBuilder queryBuilder = new StringBuilder($"SELECT * FROM {tableName} WHERE ");
+                        bool firstColumn = true;
+
+                        while (reader.Read())
+                        {
+                            if (!firstColumn)
+                            {
+                                queryBuilder.Append(" OR ");
+                            }
+                            firstColumn = false;
+                            string columnName = reader["name"].ToString();
+                            queryBuilder.Append($"LOWER({columnName}) LIKE @FilterText");
+                        }
+
+                        string query = queryBuilder.ToString();
+                        using (SQLiteCommand filterCommand = new SQLiteCommand(query, connection))
+                        {
+                            filterCommand.Parameters.AddWithValue("@FilterText", "%" + filterText + "%");
+
+                            using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(filterCommand))
+                            {
+                                adapter.Fill(dataTable);
+                            }
+                        }
                     }
                 }
                 connection.Close();
             }
-            RecipeDataGridView1.DataSource = dataTable;
+            dataGridView.DataSource = dataTable;
         }
     }
 }

@@ -5,8 +5,8 @@ namespace FTB_Quests
 {
     public class DatabaseIO
     {
-        ConfigManager configManager;
-        
+        readonly ConfigManager configManager;
+
         public DatabaseIO()
         {
             configManager = ConfigManager.Instance;
@@ -21,11 +21,10 @@ namespace FTB_Quests
                 {
                     try
                     {
-
-                        string deleteIngredientsQuery = " DROP TABLE IF EXISTS IngredientLookup";
+                        string deletePotions = "DROP TABLE IF EXISTS Potions";
                         string deleteRecipesQuery = "DROP TABLE IF EXISTS Recipes";
 
-                        using (SQLiteCommand command = new SQLiteCommand(deleteIngredientsQuery, connection))
+                        using (SQLiteCommand command = new SQLiteCommand(deletePotions, connection))
                         {
                             command.ExecuteNonQuery();
                         }
@@ -81,6 +80,19 @@ namespace FTB_Quests
                     command.ExecuteNonQuery();
                 }
 
+                string createPotionsTableQuery = @"CREATE TABLE IF NOT EXISTS Potions (
+                RecipeID INTEGER PRIMARY KEY AUTOINCREMENT,
+                InputPattern TEXT,
+                PotionName TEXT,
+                PotionDisplayName TEXT,
+                OreDict TEXT,
+                Quests TEXT,
+                TaskUID TEXT
+            );";
+                using (SQLiteCommand command = new SQLiteCommand(createPotionsTableQuery, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
                 connection.Close();
                 Console.WriteLine("Tables created successfully.");
             }
