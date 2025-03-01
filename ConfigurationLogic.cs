@@ -47,22 +47,18 @@ namespace FTB_Quests
             {
                 if (IsCacheStale(baseCacheDir))
                 {
-                    DialogResult result = MessageBox.Show("Cache is outdated. Overwrite?", "Cache", MessageBoxButtons.YesNo);
-                    if (result == DialogResult.Yes)
-                    {
-                        CachingSystem.EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
-                        CacheInfoBox.AppendText("Copying config locations to cache...\n");
-                        CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox, configManager);
-                        CacheInfoBox.AppendText("Caching completed.\n");
-                    }
+                    CachingSystem.EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
+                   // CacheInfoBox.AppendText("Copying config locations to cache...\n");
+                    CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox, configManager);
+                    //CacheInfoBox.AppendText("Caching completed.\n");
                 }
             }
             else
             {
                 CachingSystem.EnsureCacheFolderExists(baseCacheDir, CacheInfoBox);
-                CacheInfoBox.AppendText("Copying config locations to cache...\n");
+               // CacheInfoBox.AppendText("Copying config locations to cache...\n");
                 CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox, configManager);
-                CacheInfoBox.AppendText("Caching completed.\n");
+                //CacheInfoBox.AppendText("Caching completed.\n");
             }
         }
 

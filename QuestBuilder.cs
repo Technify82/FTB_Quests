@@ -13,13 +13,14 @@ namespace FTB_Quests
     {
         private readonly BuildQuests buildQuests;
         ConfigManager configManager;
-        //public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
-        //private readonly string questFolderPath = ConfigManager.Config.QuestFolder.ToString();
-
+        private List<ProjectProperties> projectProperties;
+        private List<(string name, string registry, int maxDamage, string oreDict)> oreDictionaryItems;
         public QuestBuilder(BuildQuests buildQuests)
         {
             this.buildQuests = buildQuests;
             configManager = ConfigManager.Instance;
+            oreDictionaryItems = new List<(string name, string registry, int maxDamage, string oreDict)>();
+            projectProperties = new List<ProjectProperties>();
         }
 
         public void PopulateQuestBox(string filename)
@@ -31,7 +32,6 @@ namespace FTB_Quests
 
             if (files.Length == 0)
             {
-                //Console.WriteLine($"File not found: {filename}");
                 return;
             }
 
@@ -45,11 +45,9 @@ namespace FTB_Quests
                 {
                     buildQuests.QuestBox.AppendText(line + Environment.NewLine);
                 }
-
-            }
+                            }
             else
             {
-                //Console.WriteLine($"Selected file does not exist: {selectedFilePath}");
             }
         }
 
@@ -62,7 +60,6 @@ namespace FTB_Quests
 
             if (files.Length == 0)
             {
-               // Console.WriteLine($"File not found: {filename}");
                 return;
             }
 
@@ -96,121 +93,61 @@ namespace FTB_Quests
                         }
                         continue;
                     }
-
-                    questBoxContent.AppendLine(line);
+                                        questBoxContent.AppendLine(line);
                 }
-
-                buildQuests.QuestBox.Text = questBoxContent.ToString();
+                                buildQuests.QuestBox.Text = questBoxContent.ToString();
             }
             else
             {
-                //Console.WriteLine($"Selected file does not exist: {selectedFilePath}");
             }
         }
-
-
-
 
         public void OutputQuestRecipeAndDependencies(string questName, bool includeDependencies)
         {
-            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
-            using (var connection = new SQLiteConnection(connectionString))
+            var recipes = projectProperties.Where(r => r.Quests != null && r.Quests.Contains(questName)).ToList();
+
+            foreach (var recipe in recipes)
             {
-                connection.Open();
-                string query = "SELECT * FROM Recipes WHERE Quests LIKE @QuestName";
+                string questFileName = recipe.Quests;
+                List<string> ingredients = new List<string>
+        {
+            recipe.A, recipe.B, recipe.C, recipe.D, recipe.E, recipe.F, recipe.G, recipe.H, recipe.I
+        };
 
-                using (var command = new SQLiteCommand(query, connection))
+                if (includeDependencies)
                 {
-                    command.Parameters.AddWithValue("@QuestName", "%" + questName + "%");
-
-                    using (var reader = command.ExecuteReader())
+                    List<Tuple<string, string>> uidList = new List<Tuple<string, string>>();
+                    foreach (var ingredient in ingredients)
                     {
-                        if (reader.HasRows)
+                        if (!string.IsNullOrEmpty(ingredient) && ingredient != "N/A")
                         {
-                            while (reader.Read())
-                            {
-                                string questFileName = reader["Quests"].ToString();
-                                List<string> ingredients = new List<string>
-                        {
-                            reader["A"].ToString(),
-                            reader["B"].ToString(),
-                            reader["C"].ToString(),
-                            reader["D"].ToString(),
-                            reader["E"].ToString(),
-                            reader["F"].ToString(),
-                            reader["G"].ToString(),
-                            reader["H"].ToString(),
-                            reader["I"].ToString()
-                        };
-                                if (includeDependencies)
-                                {
-                                    List<Tuple<string, string>> uidList = new List<Tuple<string, string>>();
-                                    foreach (var ingredient in ingredients)
-                                    {
-                                        if (!string.IsNullOrEmpty(ingredient) && ingredient != "N/A")
-                                        {
-                                            ProcessIngredientForDependencies(ingredient, uidList);
-
-                                        }
-                                    }
-                                    ExtractLinesToDictionary(connection, uidList);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            //Console.WriteLine("No matching recipes found.");
+                            ProcessIngredientForDependencies(ingredient, uidList);
                         }
                     }
+                    ExtractLinesToDictionary(uidList);
                 }
             }
         }
+
+
 
         private void ProcessIngredientForDependencies(string ingredient, List<Tuple<string, string>> uidList)
         {
-            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
-            using (var connection = new SQLiteConnection(connectionString))
+            var recipes = projectProperties.Where(r => r.DisplayName == ingredient).ToList();
+
+            foreach (var recipe in recipes)
             {
-                connection.Open();
+                string taskUid = recipe.TaskUID;
+                string questFile = recipe.Quests;
 
-                string query = @"
-            SELECT TaskUID, Quests 
-            FROM Recipes 
-            WHERE DisplayName = @DisplayName";
-
-                using (var command = new SQLiteCommand(query, connection))
+                if (questFile.EndsWith(".snbt"))
                 {
-                    command.Parameters.AddWithValue("@DisplayName", ingredient);
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                string taskUid = reader["TaskUID"].ToString();
-                                string questFile = reader["Quests"].ToString();
-
-              
-                                if (questFile.EndsWith(".snbt"))
-                                {
-                                    questFile = questFile.Substring(0, questFile.Length - 5);
-                                }
-
-                                uidList.Add(new Tuple<string, string>(questFile, taskUid));
-                          
-                            }
-                        }
-                        else
-                        {
-                           // Console.WriteLine($"No matching quests found for ingredient: {ingredient}");
-                            Application.DoEvents();
-                        }
-                    }
+                    questFile = questFile.Substring(0, questFile.Length - 5);
                 }
+
+                uidList.Add(new Tuple<string, string>(questFile, taskUid));
             }
         }
-
 
         public string FindFileInSubfolders(string baseDirectory, string fileName)
         {
@@ -232,8 +169,7 @@ namespace FTB_Quests
             }
         }
 
-
-        private void ExtractLinesToDictionary(SQLiteConnection connection, List<Tuple<string, string>> uidList)
+        private void ExtractLinesToDictionary(List<Tuple<string, string>> uidList)
         {
             string[] lines = buildQuests.QuestBox.Text.Split('\n');
             Dictionary<int, string> linesDict = new Dictionary<int, string>();
@@ -282,7 +218,6 @@ namespace FTB_Quests
                         if (lines[counter].Contains("dependencies:") && !lines[counter].Contains("min_required_dependencies"))
                         {
                             insideDependencies = true;
-                            //Console.WriteLine("Entering dependencies group.");
 
                             while (insideDependencies)
                             {
@@ -303,7 +238,7 @@ namespace FTB_Quests
                                         string cleanedUid = lines[counter].Trim(new char[] { '"', ',', '\t', ' ' });
                                         if (IsValidUid(cleanedUid))
                                         {
-                                            QueryUID(new Tuple<string, string>(cleanedUid, ""), connection);
+                                            QueryUID(new Tuple<string, string>(cleanedUid, ""));
                                         }
                                     }
                                 }
@@ -323,7 +258,7 @@ namespace FTB_Quests
 
             if (!dependenciesFound && uidlistHasContents)
             {
-                InsertDependencies(uidList, connection);
+                InsertDependencies(uidList);
             }
 
             for (int i = counter; i < lines.Length; i++)
@@ -332,7 +267,7 @@ namespace FTB_Quests
             }
         }
 
-        private void InsertDependencies(List<Tuple<string, string>> uidList, SQLiteConnection connection)
+        private void InsertDependencies(List<Tuple<string, string>> uidList)
         {
             HashSet<string> uidSet = new HashSet<string>(uidList.Select(tuple => tuple.Item1.TrimEnd(',')));
 
@@ -378,7 +313,7 @@ namespace FTB_Quests
 
             foreach (var uid in uidSet)
             {
-                QueryUID(new Tuple<string, string>(uid, ""), connection);
+                QueryUID(new Tuple<string, string>(uid, ""));
                 buildQuests.QuestBox.AppendText($"\t\t\"{uid}\"," + Environment.NewLine);
                 Application.DoEvents();
             }
@@ -392,37 +327,26 @@ namespace FTB_Quests
             return !string.IsNullOrEmpty(uid) && uid.Length == 8 && uid.All(char.IsLetterOrDigit);
         }
 
-        private void QueryUID(Tuple<string, string> uidInfo, SQLiteConnection connection)
+        private void QueryUID(Tuple<string, string> uidInfo)
         {
             string questFile = uidInfo.Item1.Trim(new char[] { '"', ',', '\t', ' ' });
 
-            string query = @"
-                    SELECT DisplayName
-                    FROM Recipes
-                    WHERE Quests LIKE @QuestFile";
+            var matchingRecipes = projectProperties.Where(r => r.Quests != null && r.Quests.Contains(questFile)).ToList();
 
-            using (var command = new SQLiteCommand(query, connection))
+            if (matchingRecipes.Any())
             {
-                command.Parameters.AddWithValue("@QuestFile", "%" + questFile + "%");
-
-                using (var reader = command.ExecuteReader())
+                foreach (var recipe in matchingRecipes)
                 {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            string displayName = reader["DisplayName"].ToString();
+                    string displayName = recipe.DisplayName;
 
-                            buildQuests.DependencyBox.AppendText(displayName + Environment.NewLine);
-                            Application.DoEvents();
-                        }
-                    }
-                    else
-                    {
-                        //Console.WriteLine("No Matching Quest Found.");
-                    }
+                    buildQuests.DependencyBox.AppendText(displayName + Environment.NewLine);
+                    Application.DoEvents();
                 }
             }
+            else
+            {
+            }
         }
+
     }
 }

@@ -7,13 +7,15 @@ namespace FTB_Quests
     public partial class Configuration : Form
     {
         public ConfigProperties config;
-        ConfigManager configManager;
-        private MainForm mainForm;
+        readonly ConfigManager configManager;
+        private readonly MainForm mainForm;
+        private readonly Zip zip;
 
-        public Configuration(MainForm mainForm)
+        public Configuration(MainForm mainForm, Zip zip)
         {
             InitializeComponent();
             this.mainForm = mainForm;
+            this.zip = zip;         
             configManager = ConfigManager.Instance;
             LoadAndInitializeConfiguration();
             InitializeCache(config, CacheInfoBox, configManager);
@@ -48,7 +50,6 @@ namespace FTB_Quests
 
         public void ItemImagesFolder_Click(object sender, EventArgs e)
         {
-
             string method = "ImageFolder";
             FolderSelect(method);
             SaveConfig(method);
@@ -68,13 +69,6 @@ namespace FTB_Quests
             SaveConfig(method);
         }
 
-        private void DatabaseFile_Click(object sender, EventArgs e)
-        {
-            string method = "DatabaseFile";
-            FileSelect(method);
-            SaveConfig(method);
-        }
-
         private void UseCache_CheckedChanged(object sender, EventArgs e)
         {
             string method = "UseCache";
@@ -87,7 +81,6 @@ namespace FTB_Quests
                 CacheInfoBox.AppendText("Copying config locations to cache...\n");
                 CachingSystem.CopyConfigLocationsToCache(config, CacheInfoBox, configManager);
 
-                // Call helper method to update text boxes and config
                 UpdateTextBoxesAndConfigForCache(baseCacheDir);
             }
             else
@@ -96,12 +89,23 @@ namespace FTB_Quests
             }
 
             configManager.Config.UseCache = UseCache.Checked;
-            SaveConfig(method); // Save configuration after updates
+            SaveConfig(method);     
         }
 
-        private void PrintCurrentCache_Click(object sender, EventArgs e)
+        private void SaveCache_Click(object sender, EventArgs e)
         {
+            string cacheDir = Path.Combine(Environment.CurrentDirectory, "Cache");
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string tempZipFilePath = Path.Combine(Environment.CurrentDirectory, $"TempCache_{timestamp}.zip");
+            string finalZipFilePath = Path.Combine(cacheDir, $"Cache_{timestamp}.zip");
 
+            zip.CompressDirectory(cacheDir, tempZipFilePath, CacheInfoBox);
+
+            if (File.Exists(tempZipFilePath))
+            {
+                File.Move(tempZipFilePath, finalZipFilePath);
+                CacheInfoBox.AppendText($"Cache directory zipped to: {finalZipFilePath}\n");
+            }
         }
     }
 }

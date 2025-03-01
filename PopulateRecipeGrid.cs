@@ -1,6 +1,7 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -12,28 +13,18 @@ namespace FTB_Quests
     {
         public MainForm form;
         ConfigManager configManager;
-        //public string connectionString = $"Data Source={ConfigManager.Config.DatabaseFile};Version=3;";
-        //public string ImageFolder = ConfigManager.Config.ImageFolder;
-        private readonly QuestLinker questLinker;
+        private List<ProjectProperties> projectProperties;
+        List<Potions> potions;
 
-        public PopulateRecipeGrid(MainForm form)
+        public PopulateRecipeGrid(MainForm form, List<ProjectProperties> projectProperties)
         {
             this.form = form;
             configManager = ConfigManager.Instance;
-            questLinker = new QuestLinker(form);
+            this.projectProperties = projectProperties;
         }
 
         public void GridParser(ComboBox comboBox, Form parentForm)
         {
-            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
-
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                MessageBox.Show("Connection string is invalid");
-                Console.WriteLine("Connection string is null or empty.");
-                return;
-            }
-
             if (comboBox.SelectedItem == null)
             {
                 MessageBox.Show("Please select an item from the list.");
@@ -41,23 +32,15 @@ namespace FTB_Quests
             }
 
             string selectedRecipe = comboBox.SelectedItem.ToString();
+            ClearAllPictureBoxes(parentForm);
 
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            var (displayName, inputPattern, ingredients) = GetRecipeDetails(selectedRecipe);
+            if (!string.IsNullOrEmpty(displayName))
             {
-                connection.Open();
-                ClearAllPictureBoxes(parentForm);
-
-                var (displayName, inputPattern, ingredients) = GetRecipeDetails(selectedRecipe, connection);
-                if (!string.IsNullOrEmpty(displayName))
-                {
-                    SetOutputImage(displayName, parentForm);
-                }
-
-                PopulateIngredientPictureBoxes(inputPattern, ingredients, parentForm);
-
-
-                connection.Close();
+                SetOutputImage(displayName, parentForm);
             }
+
+            PopulateIngredientPictureBoxes(inputPattern, ingredients, parentForm);
         }
 
         private void PopulateIngredientPictureBoxes(string inputPattern, Dictionary<string, string> ingredients, Form parentForm)
@@ -100,61 +83,46 @@ namespace FTB_Quests
             }
         }
 
-        private (string DisplayName, string InputPattern, Dictionary<string, string> Ingredients) GetRecipeDetails(string recipe, SQLiteConnection connection)
+        private (string DisplayName, string InputPattern, Dictionary<string, string> Ingredients) GetRecipeDetails(string recipe)
         {
             string displayName = null;
             string inputPattern = string.Empty;
             var ingredients = new Dictionary<string, string>();
 
-            var query = @"SELECT DisplayName, InputPattern, A, B, C, D, E, F, G, H, I 
-                  FROM Recipes WHERE DisplayName = @RecipeName";
-            using (var command = new SQLiteCommand(query, connection))
+            var recipeDetails = projectProperties.FirstOrDefault(r => r.DisplayName == recipe);
+            if (recipeDetails != null)
             {
-                command.Parameters.AddWithValue("@RecipeName", recipe);
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        displayName = reader.IsDBNull(0) ? null : reader.GetString(0);
-                        inputPattern = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                displayName = recipeDetails.DisplayName;
+                inputPattern = recipeDetails.InputPattern;
 
-                        for (char c = 'A'; c <= 'I'; c++)
-                        {
-                            string ingredient = reader.IsDBNull(c - 'A' + 2) ? string.Empty : reader.GetString(c - 'A' + 2);
-                            ingredients[c.ToString()] = ingredient;
-                        }
-                    }
+                for (int i = 0; i < recipeDetails.Ingredients.Length; i++)
+                {
+                    char ingredientKey = (char)('A' + i); // Convert index to corresponding letter A-I
+                    ingredients[ingredientKey.ToString()] = recipeDetails.Ingredients[i];
                 }
             }
-            OutputFullRecipeRow(recipe, connection);
+
+            OutputFullRecipeRow(recipe);
 
             return (displayName, inputPattern, ingredients);
         }
 
-        public void OutputFullRecipeRow(string recipe, SQLiteConnection connection)
+
+        public void OutputFullRecipeRow(string recipe)
         {
-            var query = @"SELECT RecipeID, InputPattern, A, B, C, D, E, F, G, H, I, OutputItem, ItemName, ItemId, ItemMeta, DisplayName, OreDict, Quantity, Quests 
-                  FROM Recipes WHERE DisplayName = @RecipeName";
-            using (var command = new SQLiteCommand(query, connection))
+            var recipeDetails = projectProperties.FirstOrDefault(r => r.DisplayName == recipe);
+            if (recipeDetails != null)
             {
-                command.Parameters.AddWithValue("@RecipeName", recipe);
-                using (var reader = command.ExecuteReader())
+                form.RecipeTextDetails.Clear();
+                foreach (var prop in typeof(ProjectProperties).GetProperties())
                 {
-                    if (reader.Read())
-                    {
-                        form.RecipeTextDetails.Clear();
-                        for (int i = 0; i < reader.FieldCount; i++)
-                        {
-                            string columnName = reader.GetName(i);
-                            string columnValue = reader.IsDBNull(i) ? "NULL" : reader.GetValue(i).ToString();
-                            form.RecipeTextDetails.AppendText($"{columnName}: {columnValue}{Environment.NewLine}");
-                            Console.WriteLine($"{columnName}: {columnValue}");
-                        }
-                    }
+                    string columnName = prop.Name;
+                    string columnValue = prop.GetValue(recipeDetails)?.ToString() ?? "NULL";
+                    form.RecipeTextDetails.AppendText($"{columnName}: {columnValue}{Environment.NewLine}");
+                    Console.WriteLine($"{columnName}: {columnValue}");
                 }
             }
         }
-
 
         public void SetOutputImage(string displayName, Form parentForm)
         {
@@ -210,7 +178,5 @@ namespace FTB_Quests
                 Console.WriteLine($"Cleared Image for pictureBoxOutput");
             }
         }
-
     }
 }
-

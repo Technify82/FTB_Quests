@@ -30,7 +30,7 @@ namespace FTB_Quests
                 if (string.IsNullOrEmpty(config.ProjectFolder) || !Directory.Exists(config.ProjectFolder))
                 {
                     MessageBox.Show("Please set a valid project folder before proceeding.", "Project Folder Missing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    ProjectFolder_Click(null, null); // Prompt user to select a project folder
+                    ProjectFolder_Click(null, null);
                 }
                 else
                 {
@@ -50,7 +50,6 @@ namespace FTB_Quests
             imageFolderTextBox.Text = config.ImageFolder;
             QuestFolderLocation.Text = config.QuestFolder;
             OreDictFileLocation.Text = config.OreDictionary;
-            DatabaseFile.Text = config.DatabaseFile;
             UseCache.Checked = config.UseCache;
         }
 
@@ -75,9 +74,6 @@ namespace FTB_Quests
                     break;
                 case "OreDictFile":
                     config.OreDictionary = OreDictFileLocation.Text;
-                    break;
-                case "DatabaseFile":
-                    config.DatabaseFile = DatabaseFile.Text;
                     break;
                 case "UseCache":
                     config.UseCache = UseCache.Checked;
@@ -126,8 +122,7 @@ namespace FTB_Quests
             config.QuestFolder = QuestFolderLocation.Text;
             OreDictFileLocation.Text = Path.Combine(projectFolderPath, "dumps\\itemdump.txt");
             config.OreDictionary = OreDictFileLocation.Text;
-            DatabaseFile.Text = config.DatabaseFile;
-            UseCache.Checked = config.UseCache;
+            config.UseCache = UseCache.Checked;
 
         }
     }

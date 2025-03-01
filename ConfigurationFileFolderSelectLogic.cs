@@ -86,16 +86,6 @@ namespace FTB_Quests
                             OreDictFileLocation.Text = openFileDialog.FileName;
                         }
                         break;
-                    case "DatabaseFile":
-                        openFileDialog.Title = "Select an SQL Database";
-                        openFileDialog.Filter = "DB files (*.db)|*.db";
-                        openFileDialog.DefaultExt = "db";
-                        if (openFileDialog.ShowDialog() == DialogResult.OK)
-                        {
-                            config.DatabaseFile = openFileDialog.FileName;
-                            DatabaseFile.Text = openFileDialog.FileName;
-                        }
-                        break;
                 }
             }
         }

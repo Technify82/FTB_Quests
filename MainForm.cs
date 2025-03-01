@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace FTB_Quests
 {
     public partial class MainForm : Form
     {
-        ConfigManager configManager;
+        readonly ConfigManager configManager;
         private readonly Configuration configuration;
+        public List<ProjectProperties> projectProperties;
+        public List<Potions> potionProperties;
         private QuestLinker questLinker;
         private NewParser newParser;
         private DataDisplay dataDisplay;
@@ -14,18 +18,19 @@ namespace FTB_Quests
         private BuildQuests buildQuests;
         OreDictLogic oreDictLogic;
         private QuestUI questUI;
+        private readonly Zip zip;
 
         public MainForm()
         {
             InitializeComponent();
+            projectProperties = new List<ProjectProperties>();
             Show();
-            configuration = new Configuration(this);
+            zip = new Zip();
+            configuration = new Configuration(this, zip);
             configManager = ConfigManager.Instance;
             configuration.LoadAndInitializeConfiguration();
-            //configuration.PopulateTextBoxes();
             InitializeComponents();
         }
-
 
         private bool componentsInitialized = false;
 
@@ -35,12 +40,11 @@ namespace FTB_Quests
             {
                 if (configManager.Config.ProjectFolder != null)
                 {
-                    questLinker = new QuestLinker(this);
-                    newParser = new NewParser(this);
-                    newParser.CheckDatabaseAndPopulateRecipeText();
+                    questLinker = new QuestLinker(this, projectProperties, potionProperties);
+                    newParser = new NewParser(this, projectProperties, potionProperties);
                     oreDictLogic = new OreDictLogic(this);
-                    dataDisplay = new DataDisplay();
-                    populateRecipeGrid = new PopulateRecipeGrid(this);
+                    dataDisplay = new DataDisplay(this, projectProperties, potionProperties);
+                    populateRecipeGrid = new PopulateRecipeGrid(this, projectProperties);
                     dataDisplay.DataDisplay_Load();
                     buildQuests = new BuildQuests();
                     questUI = new QuestUI();
@@ -61,12 +65,10 @@ namespace FTB_Quests
         public void UpdateConfiguration()
 
         {
-            //configuration.LoadAndInitializeConfiguration();
-            questLinker = new QuestLinker(this);
-            newParser = new NewParser(this);
-            newParser.CheckDatabaseAndPopulateRecipeText();
+            questLinker = new QuestLinker(this, projectProperties, potionProperties);
+            newParser = new NewParser(this, projectProperties, potionProperties);
             oreDictLogic = new OreDictLogic(this);
-            populateRecipeGrid = new PopulateRecipeGrid(this);
+            populateRecipeGrid = new PopulateRecipeGrid(this, projectProperties);
             buildQuests = new BuildQuests();
             questUI = new QuestUI();
             dataDisplay.DataDisplay_Load();
@@ -83,18 +85,19 @@ namespace FTB_Quests
                 return;
             }
             populateRecipeGrid.GridParser(RecipeText, this);
-            questLinker.CheckItemInDatabase();
         }
 
         private void ViewRecipeDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //var recipes = projectProperties;
+            //var potions = potionProperties;
+
             if (dataDisplay == null || dataDisplay.IsDisposed)
             {
-                dataDisplay = new DataDisplay();
+                dataDisplay = new DataDisplay(this, projectProperties, potionProperties);
             }
             dataDisplay.DataDisplay_Load();
             dataDisplay.Show();
-            //Hide();
         }
 
         private void ParseRecipeFileToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -102,7 +105,7 @@ namespace FTB_Quests
             RecipeText.Items.Clear();
             if (newParser == null)
             {
-                newParser = new NewParser(this);
+                newParser = new NewParser(this, projectProperties, potionProperties);
             }
             newParser.ParseRecipeFile();
             oreDictLogic.CompileOreDictInformation();
@@ -121,16 +124,15 @@ namespace FTB_Quests
 
         private void ConfigurationToolStrip_Click(object sender, EventArgs e)
         {
-            Configuration configForm = new Configuration(this);
+            Configuration configForm = new Configuration(this, zip);
             configForm.Show();
-         //   Hide();
         }
 
         private void ExitToolStrip_Click(object sender, EventArgs e) => Close();
 
         private void ParseAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Depending on your modpack, this could take a while.");
+            //MessageBox.Show("Depending on your modpack, this could take a while.");
             newParser.ParseRecipeFile();
             oreDictLogic.CompileOreDictInformation();
             questLinker.QuestDirectoryScan();
@@ -146,10 +148,9 @@ namespace FTB_Quests
             }
 
             buildQuests.Show();
-           // Hide() ;
         }
 
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        private void ToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             if (questUI == null || questUI.IsDisposed)
             {

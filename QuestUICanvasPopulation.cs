@@ -10,74 +10,61 @@ using System.Windows.Forms;
 namespace FTB_Quests
 {
 
-    public class QuestItem
-    {
-        public string FileName { get; set; }
-        public bool IsBroken { get; set; }
-        public Image QuestImage { get; set; }
-    }
-
     public partial class QuestUI
     {
-        private readonly Dictionary<string, QuestItem> questItemsCache = new Dictionary<string, QuestItem>();
+       // private readonly Dictionary<string, QuestItem> questItemsCache = new Dictionary<string, QuestItem>();
         private readonly Dictionary<string, List<string>> displayNameCache = new Dictionary<string, List<string>>();
         private readonly Dictionary<string, string> questFolderPaths = new Dictionary<string, string>();
-        //ConfigManager configManager;
-
+        
         private void DisplayQuestsInCanvas()
         {
-            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
-            // configManager = ConfigManager.Instance;
-            PreloadData(connectionString);
-            var nonBrokenItems = FilterBrokenItems();
             QuestPanel.Controls.Clear();
-
             ToolTip toolTip = new ToolTip();
 
-            var questItems = GetQuestsForSelectedIndex(connectionString, out int questItemCount);
+            var questItems = GetQuestsForSelectedIndex(out int questItemCount);
 
             int maxGridItems = questItemCount + 10;
-
             int columnCount = 30;
             int totalItems = 0;
             var buffer = new List<Control>();
 
             foreach (var questItem in questItems)
             {
-                var pictureBox = new PictureBox
+                if (!questItem.IsBroken)       
                 {
-                    Image = questItem.QuestImage,
-                    SizeMode = PictureBoxSizeMode.StretchImage,
-                    Width = 32,
-                    Height = 32,
-                    Tag = questItem.FileName
-                };
-
-                if (displayNameCache.ContainsKey(questItem.FileName))
-                {
-                    var displayNames = displayNameCache[questItem.FileName];
-                    if (displayNames.Count > 0)
+                    var pictureBox = new PictureBox
                     {
-                        toolTip.SetToolTip(pictureBox, displayNames[0]);
+                        Image = questItem.QuestImage,
+                        SizeMode = PictureBoxSizeMode.StretchImage,
+                        Width = 32,
+                        Height = 32,
+                        Tag = questItem.FileName
+                    };
+
+                    if (displayNameCache.ContainsKey(questItem.FileName))
+                    {
+                        var displayNames = displayNameCache[questItem.FileName];
+                        if (displayNames.Count > 0)
+                        {
+                            toolTip.SetToolTip(pictureBox, displayNames[0]);
+                        }
                     }
-                }
 
-                pictureBox.MouseDown += PictureBox_MouseDown;
-                pictureBox.MouseMove += PictureBox_MouseMove;
+                    pictureBox.MouseDown += PictureBox_MouseDown;
+                    pictureBox.MouseMove += PictureBox_MouseMove;
 
+                    int row = totalItems / columnCount;
+                    int column = totalItems % columnCount;
 
+                    pictureBox.Location = new Point(column * 40, row * 40);
+                    buffer.Add(pictureBox);
+                    totalItems++;
 
-                int row = totalItems / columnCount;
-                int column = totalItems % columnCount;
-
-                pictureBox.Location = new Point(column * 40, row * 40);
-                buffer.Add(pictureBox);
-                totalItems++;
-
-                if (buffer.Count >= 100)
-                {
-                    AddControlsToCanvas(buffer);
-                    buffer.Clear();
+                    if (buffer.Count >= 100)
+                    {
+                        AddControlsToCanvas(buffer);
+                        buffer.Clear();
+                    }
                 }
             }
 
@@ -101,7 +88,6 @@ namespace FTB_Quests
                 pictureBox.MouseDown += PictureBox_MouseDown;
                 pictureBox.MouseMove += PictureBox_MouseMove;
 
-
                 pictureBox.Location = new Point(column * 40, row * 40);
                 buffer.Add(pictureBox);
                 totalItems++;
@@ -119,30 +105,13 @@ namespace FTB_Quests
             }
         }
 
-        private List<QuestItem> FilterBrokenItems()
-        {
-            return questItemsCache.Values.Where(item => !item.IsBroken).ToList();
-        }
+        //private List<QuestItem> FilterBrokenItems()
+        //{
+        //    return questItemsCache.Values.Where(item => !item.IsBroken).ToList();
+        //}
 
-        public void PreloadData(string connectionString)
-        {
-            var allQuests = GetQuestsForSelectedIndex(connectionString, out _);
 
-            foreach (var questItem in allQuests)
-            {
-                if (!questItemsCache.ContainsKey(questItem.FileName))
-                {
-                    questItemsCache[questItem.FileName] = questItem;
-                }
-
-                if (!displayNameCache.ContainsKey(questItem.FileName))
-                {
-                    displayNameCache[questItem.FileName] = new List<string> { questItem.FileName };
-                }
-            }
-        }
-
-        public List<QuestItem> GetQuestsForSelectedIndex(string connectionString, out int questItemCount)
+        public List<QuestItem> GetQuestsForSelectedIndex(out int questItemCount)
         {
             List<QuestItem> selectedNodeQuests = new List<QuestItem>();
 
@@ -165,69 +134,39 @@ namespace FTB_Quests
                             return selectedNodeQuests;
                         }
 
-                        using (var connection = new SQLiteConnection(connectionString))
+                        foreach (var fileName in snbtFiles)
                         {
-                            connection.Open();
+                            string questFile = fileName;
+                            string displayName = fileName;     
+                            bool isBroken = string.IsNullOrEmpty(displayName);
 
-                            int batchSize = 100;
-                            for (int batchStart = 0; batchStart < snbtFiles.Count; batchStart += batchSize)
+                            Image questImage = null;
+                            try
                             {
-                                using (var command = new SQLiteCommand(connection))
-                                {
-                                    StringBuilder queryBuilder = new StringBuilder();
-                                    queryBuilder.Append("SELECT Quests, DisplayName FROM Recipes WHERE ");
-
-                                    int batchEnd = Math.Min(batchStart + batchSize, snbtFiles.Count);
-                                    for (int i = batchStart; i < batchEnd; i++)
-                                    {
-                                        string parameterName = "@QuestFile" + i;
-                                        if (i > batchStart)
-                                            queryBuilder.Append(" OR ");
-                                        queryBuilder.Append($"Quests LIKE {parameterName}");
-                                        command.Parameters.AddWithValue(parameterName, "%" + snbtFiles[i] + "%");
-                                    }
-
-                                    command.CommandText = queryBuilder.ToString();
-                                    using (var reader = command.ExecuteReader())
-                                    {
-                                        while (reader.Read())
-                                        {
-                                            string questFile = reader["Quests"].ToString();
-                                            string displayName = reader["DisplayName"].ToString();
-                                            bool isBroken = string.IsNullOrEmpty(displayName);
-
-                                            Image questImage = null;
-                                            try
-                                            {
-                                                questImage = LoadQuestImage(questFile, connectionString);
-                                            }
-                                            catch (OutOfMemoryException)
-                                            {
-                                                Console.WriteLine($"Out of memory while loading image for quest: {questFile}");
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                Console.WriteLine($"Error loading image for quest: {ex.Message}");
-                                            }
-
-                                            QuestItem questItem = new QuestItem
-                                            {
-                                                FileName = questFile,
-                                                IsBroken = isBroken,
-                                                QuestImage = questImage
-                                            };
-
-                                            selectedNodeQuests.Add(questItem);
-
-                                            if (questImage != null && questImage != questItem.QuestImage)
-                                            {
-                                                questImage.Dispose();
-                                            }
-                                        }
-                                    }
-                                }
+                                questImage = LoadQuestImage(questFile);
                             }
-                            connection.Close();
+                            catch (OutOfMemoryException)
+                            {
+                                Console.WriteLine($"Out of memory while loading image for quest: {questFile}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error loading image for quest: {ex.Message}");
+                            }
+
+                            QuestItem questItem = new QuestItem
+                            {
+                                FileName = questFile,
+                                IsBroken = isBroken,
+                                QuestImage = questImage
+                            };
+
+                            selectedNodeQuests.Add(questItem);
+
+                            if (questImage != null && questImage != questItem.QuestImage)
+                            {
+                                questImage.Dispose();
+                            }
                         }
                     }
                 }
@@ -241,9 +180,10 @@ namespace FTB_Quests
             return selectedNodeQuests;
         }
 
-        public Image LoadQuestImage(string questFileName, string connectionString)
+
+        public Image LoadQuestImage(string questFileName)
         {
-            List<string> displayNames = GetQuestDisplayNames(questFileName, connectionString);
+            List<string> displayNames = GetQuestDisplayNames(questFileName);
             Image questImage = null;
 
             foreach (var displayName in displayNames)
@@ -281,7 +221,8 @@ namespace FTB_Quests
             return questImage;
         }
 
-        public List<string> GetQuestDisplayNames(string questFileName, string connectionString)
+
+        public List<string> GetQuestDisplayNames(string questFileName)
         {
             if (displayNameCache.ContainsKey(questFileName))
             {
@@ -290,34 +231,12 @@ namespace FTB_Quests
 
             List<string> displayNames = new List<string>();
 
-            using (var connection = new SQLiteConnection(connectionString))
-            {
-                connection.Open();
-                string query = @"
-        SELECT DisplayName
-        FROM Recipes
-        WHERE Quests LIKE @QuestFile";
-
-                using (var command = new SQLiteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@QuestFile", "%" + questFileName + "%");
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string displayName = reader["DisplayName"].ToString();
-                            displayNames.Add(displayName);
-                        }
-                    }
-                }
-
-                connection.Close();
-            }
+            displayNames.Add(questFileName);           
 
             displayNameCache[questFileName] = displayNames;
             return displayNames;
         }
+
 
         private bool DirectoryContainsSNBTFiles(DirectoryInfo directoryInfo)
         {

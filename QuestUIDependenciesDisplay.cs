@@ -10,12 +10,15 @@ namespace FTB_Quests
     public partial class QuestUI
     {
         private Dictionary<string, Dictionary<string, List<string>>> dependencies = new Dictionary<string, Dictionary<string, List<string>>>();
+        //private Dictionary<string, Dictionary<string, List<string>>> dependencies = new Dictionary<string, Dictionary<string, List<string>>>();
+        private Dictionary<string, List<string>> questRecipes = new Dictionary<string, List<string>>(); // Holds quest and their corresponding recipes
+
 
         public void InitializeDependencies()
         {
             LoadDependenciesForSelectedIndex();
-
         }
+
 
         private void LoadDependenciesForSelectedIndex()
         {
@@ -37,7 +40,6 @@ namespace FTB_Quests
                     {
                         LoadAndStoreDependencies(snbtFile);
                     }
-
                 }
             }
             else
@@ -46,51 +48,38 @@ namespace FTB_Quests
             }
         }
 
+
         private void LoadAndStoreDependencies(string snbtFile)
         {
-            string connectionString = $"Data Source={configManager.Config.DatabaseFile};Version=3;";
-
-            using (var connection = new SQLiteConnection(connectionString))
+            // Simulate the data that would come from the database
+            // Here, we use the questRecipes dictionary to hold recipe data for each quest
+            if (questRecipes.TryGetValue(snbtFile, out var recipes))
             {
-                connection.Open();
-                string query = @"
-            SELECT A, B, C, D, E, F, G, H, I, DisplayName
-            FROM Recipes
-            WHERE Quests LIKE @Quest";
-
-                using (var command = new SQLiteCommand(query, connection))
+                foreach (var recipe in recipes)
                 {
-                    command.Parameters.AddWithValue("@Quest", "%" + snbtFile + "%");
-
-                    using (var reader = command.ExecuteReader())
+                    string displayName = recipe; // Simulate display name retrieval
+                    if (!dependencies.ContainsKey(snbtFile))
                     {
-                        while (reader.Read())
-                        {
-                            string displayName = reader["DisplayName"].ToString();
-                            if (!dependencies.ContainsKey(snbtFile))
-                            {
-                                dependencies[snbtFile] = new Dictionary<string, List<string>>();
-                            }
+                        dependencies[snbtFile] = new Dictionary<string, List<string>>();
+                    }
 
-                            foreach (string column in new[] { "A", "B", "C", "D", "E", "F", "G", "H", "I" })
+                    foreach (string ingredient in recipe.Split(','))
+                    {
+                        if (!string.IsNullOrEmpty(ingredient))
+                        {
+                            if (!dependencies[snbtFile].ContainsKey(ingredient))
                             {
-                                string ingredient = reader[column].ToString();
-                                if (!string.IsNullOrEmpty(ingredient))
-                                {
-                                    if (!dependencies[snbtFile].ContainsKey(ingredient))
-                                    {
-                                        dependencies[snbtFile][ingredient] = new List<string>();
-                                    }
-                                    dependencies[snbtFile][ingredient].Add(displayName);
-                                }
+                                dependencies[snbtFile][ingredient] = new List<string>();
                             }
+                            dependencies[snbtFile][ingredient].Add(displayName);
                         }
                     }
                 }
-                connection.Close();
             }
+
             SaveDependenciesGraphToFile();
         }
+
 
         private void DrawDependencies()
         {
@@ -135,6 +124,7 @@ namespace FTB_Quests
             }
         }
 
+
         private PictureBox FindPictureBoxByTag(string tag)
         {
             foreach (Control control in QuestPanel.Controls)
@@ -146,6 +136,7 @@ namespace FTB_Quests
             }
             return null;
         }
+
 
         private void SaveDependenciesGraphToFile()
         {
@@ -171,6 +162,7 @@ namespace FTB_Quests
             Console.WriteLine($"Dependencies graph saved to {filePath}");
         }
 
+
         private void WriteDependenciesToFile(StreamWriter writer, string snbtFile, string ingredient, int level, HashSet<string> visited)
         {
             if (!dependencies.ContainsKey(snbtFile) || !dependencies[snbtFile].ContainsKey(ingredient) || visited.Contains(ingredient))
@@ -187,11 +179,5 @@ namespace FTB_Quests
                 WriteDependenciesToFile(writer, snbtFile, dependent, level + 1, visited);
             }
         }
-
-
-
-
-
-
     }
 }
